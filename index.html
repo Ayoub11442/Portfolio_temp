@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Portfolio | Your Name</title>
+    
+    <!-- SEO and Open Graph Tags -->
+    <meta name="description" content="Professional portfolio showcasing projects, services and skills">
+    <meta name="keywords" content="portfolio, web development, design, projects">
+    <meta property="og:title" content="Professional Portfolio | Your Name">
+    <meta property="og:description" content="Check out my professional portfolio showcasing my latest projects and services">
+    <meta property="og:image" content="images/profile.jpg">
+    <meta property="og:type" content="website">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Css Code -->
+    <link rel="stylesheet" href="style.css">
+    <!-- AOS Animation Library -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    
+</head>
+<body>
+   
+   <!-- Header Section -->
+    <header class="transparent">
+    <div class="scroll-progress"></div>
+    <div class="header-container">
+      <a href="#" class="logo">Brand</a>
+      
+      <nav class="nav-menu" id="mainNav">
+        <ul class="nav-list">
+          <li class="nav-item" style="--item-index: 0;">
+            <a href="#hero" class="nav-link active">Home</a>
+          </li>
+          <li class="nav-item" style="--item-index: 1;">
+            <a href="#about" class="nav-link">About</a>
+          </li>
+          <li style="--item-index: 2;">
+            <a href="#services" class="nav-link">Services</a>
+          </li>
+          <li class="nav-item" style="--item-index: 3;">
+            <a href="#projects" class="nav-link">Portfolio</a>
+          </li>
+          <li class="nav-item" style="--item-index: 4;">
+            <a href="#contact" class="nav-link">Contact</a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="header-controls">
+        <button id="darkModeToggle" class="theme-toggle">
+          <i class="fas fa-moon"></i>
+        </button>
+        <a href="#contact" class="cta-button">Get Started</a>
+      </div>
+      
+      <button id="menuToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+    <div class="menu-overlay"></div>
+  </header>
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1>Hi, I'm <span class="highlight">Jane Doe</span></h1>
+                <p>
+                    <span class="static-text">I am </span>
+                    <span id="typed-text" class="typed-text"></span>
+                </p>            
+                <div class="location-badge">
+                    <i class="fas fa-map-marker-alt"></i> 
+                    <span>San Francisco, CA</span>
+                </div>
+
+                <div class="skill-badges">
+                    <span class="skill-badge">React</span>
+                    <span class="skill-badge">JavaScript</span>
+                    <span class="skill-badge">Node.js</span>
+                    <span class="skill-badge">CSS</span>
+                    <span class="skill-badge">Design</span>
+                </div>
+
+                <div class="hero-btns">
+                    <a href="#projects" class="btn btn-primary">View My Work</a>
+                    <a href="#contact" class="btn btn-outline">Contact Me</a>
+                    <a href="/resume.pdf" download class="btn btn-resume">
+                        <i class="fas fa-download"></i> Resume
+                    </a>
+                </div>
+
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <div class="hero-image">
+                <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg" alt="Profile Image">
+            </div>
+        </div>
+    </section>
+    <!-- About Section -->
+    <section id="about" class="section">
+        <div class="container">
+            <h2 class="section-title">About Me</h2>
+            
+            <div class="about-container">
+                <div class="about-image" data-aos="fade-right">
+                    <img src="https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg" alt="About Image">
+                </div>
+                
+                <div class="about-content" data-aos="fade-left">
+                    <h2>Professional Web Developer & Designer</h2>
+                    <p class="about-text">
+                        I'm a passionate web developer with expertise in creating dynamic, responsive websites. With over 5 years of experience, I've worked with a variety of clients from startups to established businesses.
+                    </p>
+                    <p class="about-text">
+                        My goal is to build web solutions that not only look great but also solve real problems for clients and their users. I pride myself on writing clean, well-documented code and staying up-to-date with the latest trends and technologies.
+                    </p>
+                    
+                    <div class="skills-container">
+                        <span class="skill-item" data-level="Advanced">HTML5</span>
+                        <div class="skill-item" data-level="Advanced">JavaScript</div>
+                        <div class="skill-item" data-level="Expert">CSS</div>
+                        <div class="skill-item" data-level="Intermediate">React</div>
+                        <span class="skill-item" data-level="Intermediate">Node.js</span>
+                        <span class="skill-item" data-level="Expert">PHP</span>
+                        <span class="skill-item" data-level="Intermediate">MySQL</span>
+                        <span class="skill-item" data-level="Advanced">MongoDB</span>
+                        <span class="skill-item">WordPress</span>
+                        <span class="skill-item" data-level="Advanced">UI/UX Design</span>
+                        <span class="skill-item" data-level="Intermediate">Responsive Design</span>
+                        <span class="skill-item" data-level="Expert">SEO</span>
+                    </div>
+                    
+                    <a href="#" class="btn" style="margin-top: 30px;">Download CV</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Services Section -->
+    <section id="services" class="section">
+        <div class="container">
+            <h2 class="section-title">My Services</h2>
+            
+            <div class="services-container" style="counter-reset: service-counter;">
+                <div class="service-card" data-aos="fade-up">
+                    <div class="service-icon">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <h3 class="service-title">Web Development</h3>
+                    <p>
+                        Custom websites built with clean, efficient code that are fast, responsive, and optimized for all devices. My development process ensures your site works flawlessly.
+                    </p>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="service-icon">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <h3 class="service-title">UI/UX Design</h3>
+                    <p>
+                        Visually stunning, user-friendly interfaces that engage visitors and guide them toward taking action. My designs are both beautiful and highly functional.
+                    </p>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="service-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3 class="service-title">Responsive Design</h3>
+                    <p>
+                        Websites that adapt perfectly to any screen size, ensuring your site looks great and functions properly on smartphones, tablets, and desktops.
+                    </p>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="300">
+                    <div class="service-icon">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3 class="service-title">SEO Optimization</h3>
+                    <p>
+                        Search engine friendly websites built with proper structure, fast loading times, and optimized content to help improve your rankings and visibility.
+                    </p>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="400">
+                    <div class="service-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h3 class="service-title">E-Commerce Solutions</h3>
+                    <p>
+                        Custom online stores with secure payment processing, inventory management, and user-friendly interfaces to help you sell your products online.
+                    </p>
+                </div>
+                
+                <div class="service-card" data-aos="fade-up" data-aos-delay="500">
+                    <div class="service-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="service-title">Website Maintenance</h3>
+                    <p>
+                        Regular updates, security monitoring, performance optimization, and content updates to keep your website running smoothly and securely.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Projects Section -->
+    <section id="projects" class="section">
+        <div class="container">
+            <h2 class="section-title">My Recent Work</h2>
+            
+            <div class="projects-nav">
+                <div class="project-filter active" data-filter="all">All</div>
+                <div class="project-filter" data-filter="web">Web Design</div>
+                <div class="project-filter" data-filter="app">App Development</div>
+                <div class="project-filter" data-filter="ui">UI/UX Design</div>
+            </div>
+            
+            <div class="projects-container">
+                <div class="project-card" data-aos="fade-up" data-category="web">
+                    <img src="https://static.wingify.com/gcp/uploads/sites/3/2021/09/Feature-image-7-ecommerce-1.png" alt="Project 1" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">E-Commerce Website</h3>
+                        <p class="project-category">Web Development</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-aos="fade-up" data-aos-delay="100" data-category="app">
+                    <img src="https://www.chanty.com/blog/wp-content/uploads/2020/10/Task-manager-apps-740x380.jpg" alt="Project 2" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Task Management App</h3>
+                        <p class="project-category">App Development</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-aos="fade-up" data-aos-delay="200" data-category="ui">
+                    <img src="https://www.geckoboard.com/uploads/Forecast-dashboard-example.png" alt="Project 3" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Finance Dashboard</h3>
+                        <p class="project-category">UI/UX Design</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-aos="fade-up" data-aos-delay="300" data-category="web">
+                    <img src="https://img.freepik.com/free-psd/restaurant-landing-page-template-design_23-2149609573.jpg?t=st=1743051896~exp=1743055496~hmac=fec32150c80e2384b0a60995fcbfb96f8a0296782aff60cf3f9a8b704868801f&w=1380" alt="Project 4" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Restaurant Website</h3>
+                        <p class="project-category">Web Development</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-aos="fade-up" data-aos-delay="400" data-category="app">
+                    <img src="https://i.pinimg.com/736x/c6/71/8c/c6718c7dbd78a64b28c1cb04db2c4767.jpg" alt="Project 5" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Fitness Tracker</h3>
+                        <p class="project-category">App Development</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-card" data-aos="fade-up" data-aos-delay="500" data-category="ui">
+                    <img src="https://cdn.dribbble.com/userupload/20839589/file/original-29fbde10adc3e62852d2b54eb01d3ebe.png?resize=1600x1200&vertical=center" alt="Project 6" class="project-image">
+                    <div class="project-overlay">
+                        <h3 class="project-title">Travel App Concept</h3>
+                        <p class="project-category">UI/UX Design</p>
+                        <div class="project-links">
+                            <a href="#" class="project-link"><i class="fas fa-link"></i></a>
+                            <a href="#" class="project-link"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section id="testimonials" class="section">
+        <div class="container">
+            <h2 class="section-title">Client Testimonials</h2>
+            
+            <div class="testimonials-container">
+                <div class="testimonial-card" data-aos="fade-up">
+                    <p class="testimonial-text">
+                        "Working with this developer was an absolute pleasure. They delivered a beautiful, functional website that exceeded my expectations. Their attention to detail and quick response time made the entire process smooth and stress-free."
+                    </p>
+                    <div class="testimonial-author">
+                        <img src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg" alt="Client 1" class="author-image">
+                        <div class="author-info">
+                            <h4>John Smith</h4>
+                            <p class="author-position">CEO, Tech Solutions</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-quote-right quote-icon"></i>
+                </div>
+                
+                <div class="testimonial-card" data-aos="fade-up" data-aos-delay="100">
+                    <p class="testimonial-text">
+                        "I've worked with many web developers over the years, but none have been as reliable and skilled as this one. They not only built a beautiful e-commerce site for my business but also provided valuable suggestions that increased my sales."
+                    </p>
+                    <div class="testimonial-author">
+                        <img src="https://images.pexels.com/photos/774909/pexels-photo-774909.jpeg" alt="Client 2" class="author-image">
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <p class="author-position">Owner, Fashion Boutique</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-quote-right quote-icon"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Blog Section -->
+    <section id="blog" class="section">
+        <div class="container">
+            <h2 class="section-title">Latest Articles</h2>
+            
+            <div class="blog-container">
+                <div class="blog-card" data-aos="fade-up">
+                    <div class="blog-image">
+                        <img src="https://images.pexels.com/photos/196644/pexels-photo-196644.jpeg" alt="Blog 1">
+                    </div>
+                    <div class="blog-content">
+                        <span class="blog-category">Web Design</span>
+                        <span class="blog-date"><i class="far fa-calendar-alt"></i> March 15, 2025</span>
+                        <h3 class="blog-title">10 Web Design Trends to Watch in 2025</h3>
+                        <p class="blog-excerpt">
+                            Explore the latest web design trends that are shaping the digital landscape in 2025 and how to implement them in your projects.
+                        </p>
+                        <button class="btn btn-outline">Read More</button>
+                    </div>
+                </div>
+                
+                <div class="blog-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="blog-image">
+                        <img src="https://images.pexels.com/photos/270348/pexels-photo-270348.jpeg" alt="Blog 2">
+                    </div>
+                    <div class="blog-content">
+                        <span class="blog-category">Development</span>
+                        <span class="blog-date"><i class="far fa-calendar-alt"></i> March 10, 2025</span>
+                        <h3 class="blog-title">The Ultimate Guide to Modern JavaScript</h3>
+                        <p class="blog-excerpt">
+                            Learn about modern JavaScript features, best practices, and techniques that will help you write cleaner and more efficient code.
+                        </p>
+                        <button class="btn btn-outline">Read More</button>
+                    </div>
+                </div>
+                
+                <div class="blog-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="blog-image">
+                        <img src="https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg" alt="Blog 3">
+                    </div>
+                    <div class="blog-content">
+                        <span class="blog-category">Business</span>
+                        <span class="blog-date"><i class="far fa-calendar-alt"></i> March 5, 2025</span>
+                        <h3 class="blog-title">How a Great Website Can Boost Your Business</h3>
+                        <p class="blog-excerpt">
+                            Discover how investing in a professional website can significantly impact your business growth, customer engagement, and sales.
+                        </p>
+                        <button class="btn btn-outline" >Read More</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title">Get In Touch</h2>
+            
+            <div class="contact-container">
+                <div class="contact-info" data-aos="fade-right">
+                    <h3>Let's talk about your project</h3>
+                    <p>Feel free to reach out if you're looking for a developer for your project, have a question, or just want to connect.</p>
+                    
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Location</h4>
+                                <p>New York City, NY, USA</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Email</h4>
+                                <p>your.email@example.com</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item">
+                            <div class="contact-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-text">
+                                <h4>Phone</h4>
+                                <p>+1 (123) 456-7890</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <form class="contact-form" data-aos="fade-left" id="contactForm">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Your Name" required id="name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="email" class="form-control" placeholder="Your Email" required id="email">
+                    </div>
+                    
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Subject" required id="subject">
+                    </div>
+                    
+                    <div class="form-group">
+                        <textarea class="form-control" placeholder="Your Message" required id="message"></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn form-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-widget">
+                    <h3>About Me</h3>
+                    <p class="footer-text">
+                        A passionate web developer focused on creating innovative, responsive, and user-friendly websites that help businesses grow.
+                    </p>
+                    <div class="footer-social">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#hero">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#projects">Portfolio</a></li>
+                        <li><a href="#blog">Blog</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><p >Web Development</p></li>
+                        <li><p>UI/UX Design</p></li>
+                        <li><p>Responsive Design</p></li>
+                        <li><p>SEO Optimization</p></li>
+                        <li><p>E-Commerce Solutions</p></li>
+                        <li><p>Website Maintenance</p></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-widget">
+                    <h3>Contact Info</h3>
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            New York City, NY, USA
+                        </div>
+                    </div>
+                    
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            your.email@example.com
+                        </div>
+                    </div>
+                    
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="footer-contact-text">
+                            +1 (123) 456-7890
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="copyright">© 2025 Your Name. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- EmailJS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/emailjs-com/3.2.0/email.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+    <!-- Typed.js library -->
+    <script src="https://unpkg.com/typed.js@2.0.16/dist/typed.umd.js"></script>
+    
+    <!-- Js Code -->
+    <script src="main.js"></script>
+    
+</body>
+</html>
