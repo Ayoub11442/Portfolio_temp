@@ -1,7 +1,7 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Cache DOM selectors
-  const $ = (selector) => document.querySelector(selector);
-  const $$ = (selector) => document.querySelectorAll(selector);
+document.addEventListener("DOMContentLoaded", () => {
+  // DOM query helpers
+  const $ = document.querySelector.bind(document),
+    $$ = document.querySelectorAll.bind(document);
 
   // Essential elements
   const elements = {
@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
     projectCards: $$(".project-card"),
     contactForm: $("#contactForm"),
     heroContainer: $(".hero-container"),
-    typedTextElement: $("#typed-text"),
+    typedText: $("#typed-text"),
     navLinks: $$(".nav-link"),
     sections: $$("section"),
     cursor: $(".cursor"),
@@ -23,42 +23,44 @@ document.addEventListener("DOMContentLoaded", function () {
     shapes: $$(".floating-shape"),
   };
 
-  // Throttle for performance
-  const throttle = (callback, delay = 100) => {
-    let lastCall = 0;
-    return function (...args) {
+  // Utility functions
+  const throttle = (fn, delay = 100) => {
+    let last = 0;
+    return (...args) => {
       const now = Date.now();
-      if (now - lastCall >= delay) {
-        lastCall = now;
-        callback.apply(this, args);
+      if (now - last >= delay) {
+        last = now;
+        fn(...args);
       }
     };
   };
 
   // Initialize all components
-  (function init() {
-    if (typeof AOS !== "undefined")
+  const init = () => {
+    // Initialize AOS if available
+    typeof AOS !== "undefined" &&
       AOS.init({ duration: 800, easing: "ease-in-out", once: true });
 
-    // Initialize all features
-    [
-      initThemeToggle,
-      initMobileMenu,
-      initScrollEffects,
-      initProjectFilters,
-      initSmoothScrolling,
-      initContactForm,
-      initCustomAnimations,
-      initPopup,
-      initTypedText,
-      initCursorEffects,
-    ].forEach((fn) => fn());
-  })();
+    // Conditionally initialize features based on element existence
+    elements.typedText && initTypedText();
+    $(".popup-overlay") || initPopup();
+    elements.darkModeToggle && initThemeToggle();
+    elements.menuToggle && elements.navMenu && initMobileMenu();
+    (elements.header || elements.scrollProgress) && initScrollEffects();
+    elements.projectFilters.length &&
+      elements.projectCards.length &&
+      initProjectFilters();
 
+    // Always initialize these features
+    initSmoothScrolling();
+    elements.contactForm && initContactForm();
+    (elements.heroContainer || $(".split-text-animation")) &&
+      initCustomAnimations();
+    elements.cursor && elements.cursorShadow && initCursorEffects();
+  };
+
+  // Typed text animation
   function initTypedText() {
-    const { typedTextElement } = elements;
-    if (!typedTextElement) return;
-
     const phrases = ["a Developer", "a Designer", "a Creator"];
 
     if (typeof Typed !== "undefined") {
@@ -70,27 +72,26 @@ document.addEventListener("DOMContentLoaded", function () {
           loop: true,
           startDelay: 500,
         });
-      } catch (error) {
-        console.error("Typed.js error:", error);
-        initFallbackTypeWriter(typedTextElement, phrases);
+      } catch (e) {
+        console.error("Typed.js error:", e);
+        initFallbackTypeWriter(elements.typedText, phrases);
       }
     } else {
-      initFallbackTypeWriter(typedTextElement, phrases);
+      initFallbackTypeWriter(elements.typedText, phrases);
     }
   }
 
+  // Fallback typewriter for when Typed.js is not available
   function initFallbackTypeWriter(element, phrases) {
-    class TypeWriter {
-      constructor(element, phrases, options = {}) {
-        this.element = element;
-        this.phrases = phrases;
-        this.typingSpeed = options.typingSpeed || 50;
-        this.pauseBetweenPhrases = options.pauseBetweenPhrases || 2000;
-        this.eraseSpeed = options.eraseSpeed || 30;
-        this.phraseIndex = 0;
-        this.charIndex = 0;
-        this.isDeleting = false;
-      }
+    const typewriter = {
+      element,
+      phrases,
+      typingSpeed: 50,
+      eraseSpeed: 30,
+      pauseBetweenPhrases: 2000,
+      phraseIndex: 0,
+      charIndex: 0,
+      isDeleting: false,
 
       type() {
         const currentPhrase = this.phrases[this.phraseIndex];
@@ -100,10 +101,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         this.charIndex += this.isDeleting ? -1 : 1;
 
-        const speedMultiplier = this.isDeleting ? 0.5 : 1;
-        let timeout = this.isDeleting
-          ? this.eraseSpeed
-          : this.typingSpeed * speedMultiplier;
+        let timeout = this.isDeleting ? this.eraseSpeed : this.typingSpeed;
 
         if (!this.isDeleting && this.charIndex === currentPhrase.length) {
           timeout = this.pauseBetweenPhrases;
@@ -111,127 +109,128 @@ document.addEventListener("DOMContentLoaded", function () {
         } else if (this.isDeleting && this.charIndex === 0) {
           this.isDeleting = false;
           this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
-          timeout = 500; // Pause before next phrase
+          timeout = 500;
         }
 
         setTimeout(() => this.type(), timeout);
-      }
+      },
 
       start() {
         this.type();
-      }
-    }
+      },
+    };
 
     try {
-      new TypeWriter(element, phrases).start();
-    } catch (error) {
-      console.error("Fallback typewriter error:", error);
+      typewriter.start();
+    } catch (e) {
+      console.error("Fallback typewriter error:", e);
     }
   }
 
+  // Create popup component
   function initPopup() {
-    if (!$(".popup-overlay")) {
-      document.body.insertAdjacentHTML(
-        "beforeend",
-        `
-        <div class="popup-overlay">
-          <div class="popup-container">
-            <span class="popup-close">&times;</span>
-            <div class="popup-content"></div>
-          </div>
-        </div>
+    // Create popup once
+    document.body.insertAdjacentHTML(
+      "beforeend",
       `
-      );
+      <div class="popup-overlay">
+        <div class="popup-container">
+          <span class="popup-close">&times;</span>
+          <div class="popup-content"></div>
+        </div>
+      </div>
+    `
+    );
 
-      const overlay = $(".popup-overlay");
-      const closeBtn = $(".popup-close");
+    const overlay = $(".popup-overlay");
+    const closeBtn = $(".popup-close");
 
-      closeBtn.addEventListener("click", closePopup);
-      overlay.addEventListener(
-        "click",
-        (e) => e.target === overlay && closePopup()
-      );
-      document.addEventListener(
-        "keydown",
-        (e) =>
-          e.key === "Escape" && overlay.style.display === "flex" && closePopup()
-      );
+    const closePopup = () => {
+      overlay.classList.remove("active");
+      document.body.style.overflow = "auto";
+      setTimeout(() => (overlay.style.display = "none"), 300);
+    };
 
-      function closePopup() {
-        overlay.classList.remove("active");
-        document.body.style.overflow = "auto";
-        setTimeout(() => (overlay.style.display = "none"), 300);
-      }
-    }
+    // Event handlers
+    closeBtn.addEventListener("click", closePopup);
+    overlay.addEventListener(
+      "click",
+      (e) => e.target === overlay && closePopup()
+    );
+    document.addEventListener(
+      "keydown",
+      (e) =>
+        e.key === "Escape" && overlay.style.display === "flex" && closePopup()
+    );
 
-    $$(".blog-content .btn.btn-outline").forEach((button) => {
-      const newButton = button.cloneNode(true);
-      button.parentNode.replaceChild(newButton, button);
+    // Event delegation for blog buttons
+    document.addEventListener("click", (e) => {
+      const button = e.target.closest(".blog-content .btn.btn-outline");
+      if (!button) return;
 
-      newButton.addEventListener("click", function (e) {
-        e.preventDefault();
-        const blogCard = this.closest(".blog-card");
-        if (!blogCard) return;
+      const blogCard = button.closest(".blog-card");
+      if (!blogCard) return;
 
-        const data = {
-          title:
-            blogCard.querySelector(".blog-title")?.textContent ||
-            "Article Title",
-          category:
-            blogCard.querySelector(".blog-category")?.textContent || "Category",
-          date: blogCard.querySelector(".blog-date")?.textContent || "Date",
-          excerpt:
-            blogCard.querySelector(".blog-excerpt")?.textContent ||
-            "Excerpt text",
-          imageSrc: blogCard.querySelector(".blog-image img")?.src || "",
-        };
+      e.preventDefault();
 
-        const popupContent = $(".popup-content");
-        if (popupContent) {
-          popupContent.innerHTML = `
-            <div class="popup-article">
-              <div class="popup-header">
-                <span class="popup-category">${data.category}</span>
-                <span class="popup-date">${data.date}</span>
-              </div>
-              <h2 class="popup-title">${data.title}</h2>
-              <div class="popup-featured-image">
-                ${
-                  data.imageSrc
-                    ? `<img src="${data.imageSrc}" alt="${data.title}">`
-                    : ""
-                }
-              </div>
-              <div class="popup-text">
-                <p>${data.excerpt}</p>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-              </div>
+      // Extract blog data
+      const data = {
+        title:
+          blogCard.querySelector(".blog-title")?.textContent || "Article Title",
+        category:
+          blogCard.querySelector(".blog-category")?.textContent || "Category",
+        date: blogCard.querySelector(".blog-date")?.textContent || "Date",
+        excerpt:
+          blogCard.querySelector(".blog-excerpt")?.textContent ||
+          "Excerpt text",
+        imageSrc: blogCard.querySelector(".blog-image img")?.src || "",
+      };
+
+      // Populate popup content
+      const popupContent = $(".popup-content");
+      if (popupContent) {
+        popupContent.innerHTML = `
+          <div class="popup-article">
+            <div class="popup-header">
+              <span class="popup-category">${data.category}</span>
+              <span class="popup-date">${data.date}</span>
             </div>
-          `;
-          const overlay = $(".popup-overlay");
-          overlay.style.display = "flex";
-          setTimeout(() => overlay.classList.add("active"), 10);
-          document.body.style.overflow = "hidden";
-        }
-      });
+            <h2 class="popup-title">${data.title}</h2>
+            ${
+              data.imageSrc
+                ? `<div class="popup-featured-image"><img src="${data.imageSrc}" alt="${data.title}"></div>`
+                : ""
+            }
+            <div class="popup-text">
+              <p>${data.excerpt}</p>
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+            </div>
+          </div>
+        `;
+
+        overlay.style.display = "flex";
+        setTimeout(() => overlay.classList.add("active"), 10);
+        document.body.style.overflow = "hidden";
+      }
     });
   }
 
+  // Dark mode toggle
   function initThemeToggle() {
     const { darkModeToggle, body } = elements;
-    if (!darkModeToggle) return;
-
     const themeIcon = darkModeToggle.querySelector("i");
     if (!themeIcon) return;
 
-    if (localStorage.getItem("theme") === "dark") {
+    // Load saved theme
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark") {
       body.classList.add("dark-mode");
       themeIcon.classList.replace("fa-moon", "fa-sun");
     }
 
+    // Toggle theme
     darkModeToggle.addEventListener("click", () => {
-      body.classList.toggle("dark-mode");
-      const isDarkMode = body.classList.contains("dark-mode");
+      const isDarkMode = body.classList.toggle("dark-mode");
       themeIcon.classList.replace(
         isDarkMode ? "fa-moon" : "fa-sun",
         isDarkMode ? "fa-sun" : "fa-moon"
@@ -240,14 +239,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Mobile menu
   function initMobileMenu() {
     const { menuToggle, navMenu, body, navLinks } = elements;
-    if (!menuToggle || !navMenu) return;
 
     const toggleMenu = () => {
       menuToggle.classList.toggle("active");
       navMenu.classList.toggle("active");
       body.classList.toggle("menu-open");
+
       const icon = menuToggle.querySelector("i");
       if (icon) {
         icon.classList.toggle("fa-bars");
@@ -255,6 +255,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     };
 
+    // Event handlers
     menuToggle.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -271,37 +272,45 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    navLinks.forEach((link) => {
+    // Close menu on link click
+    navLinks.forEach((link) =>
       link.addEventListener("click", () => {
-        if (navMenu.classList.contains("active")) toggleMenu();
-      });
-    });
+        navMenu.classList.contains("active") && toggleMenu();
+      })
+    );
 
+    // Handle responsive behavior
     window.addEventListener("resize", () => {
-      if (window.innerWidth > 992 && navMenu.classList.contains("active"))
+      window.innerWidth > 992 &&
+        navMenu.classList.contains("active") &&
         toggleMenu();
     });
   }
 
+  // Scroll effects
   function initScrollEffects() {
     const { header, scrollProgress, navLinks, sections } = elements;
 
     const handleScroll = throttle(() => {
       const scrollPos = window.scrollY;
 
+      // Update header classes
       if (header) {
         header.classList.toggle("scrolled", scrollPos > 50);
         header.classList.toggle("transparent", scrollPos <= 50);
       }
 
+      // Update scroll progress bar
       if (scrollProgress) {
         const height =
           document.documentElement.scrollHeight - window.innerHeight;
         scrollProgress.style.width = `${(scrollPos / height) * 100}%`;
       }
 
+      // Update active nav links
       if (sections.length && navLinks.length) {
         let current = "";
+
         sections.forEach((section) => {
           if (scrollPos >= section.offsetTop - 100) {
             current = section.getAttribute("id");
@@ -318,20 +327,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 50);
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll(); // Initial call
+    handleScroll();
   }
 
+  // Project filtering
   function initProjectFilters() {
     const { projectFilters, projectCards } = elements;
-    if (!projectFilters.length || !projectCards.length) return;
 
     projectFilters.forEach((filter) => {
       filter.addEventListener("click", () => {
+        // Update active filter
         projectFilters.forEach((item) => item.classList.remove("active"));
         filter.classList.add("active");
 
         const filterValue = filter.getAttribute("data-filter");
 
+        // Filter projects
         projectCards.forEach((card) => {
           const isVisible =
             filterValue === "all" ||
@@ -353,38 +364,42 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Smooth scrolling
   function initSmoothScrolling() {
-    $$('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", function (e) {
-        const targetId = this.getAttribute("href");
-        if (!targetId || targetId === "#") return;
+    document.addEventListener("click", (e) => {
+      const anchor = e.target.closest('a[href^="#"]');
+      if (!anchor) return;
 
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          e.preventDefault();
-          window.scrollTo({
-            top: targetElement.offsetTop - 70,
-            behavior: "smooth",
-          });
-        }
-      });
+      const targetId = anchor.getAttribute("href");
+      if (!targetId || targetId === "#") return;
+
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        e.preventDefault();
+        window.scrollTo({
+          top: targetElement.offsetTop - 70,
+          behavior: "smooth",
+        });
+      }
     });
   }
 
+  // Contact form
   function initContactForm() {
     const { contactForm } = elements;
     if (!contactForm || typeof emailjs === "undefined") return;
 
     try {
       emailjs.init("YOUR_USER_ID");
-    } catch (error) {
-      console.error("EmailJS error:", error);
+    } catch (e) {
+      console.error("EmailJS error:", e);
       return;
     }
 
     contactForm.addEventListener("submit", function (e) {
       e.preventDefault();
 
+      // Get form data
       const formData = {
         name: $("#name")?.value,
         email: $("#email")?.value,
@@ -392,14 +407,17 @@ document.addEventListener("DOMContentLoaded", function () {
         message: $("#message")?.value,
       };
 
+      // Validate form
       if (!formData.name || !formData.email || !formData.message) {
         alert("Please fill in all required fields");
         return;
       }
 
+      // Disable submit button
       const submitBtn = contactForm.querySelector('button[type="submit"]');
       if (submitBtn) submitBtn.disabled = true;
 
+      // Send email
       emailjs
         .send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
           from_name: formData.name.trim(),
@@ -421,27 +439,26 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // Custom animations
   function initCustomAnimations() {
     const { heroContainer, body } = elements;
 
-    // 3D hero container effect
+    // 3D hero effect
     if (heroContainer) {
       document.addEventListener(
         "mousemove",
         throttle((e) => {
-          const x = e.clientX / window.innerWidth - 0.5;
-          const y = e.clientY / window.innerHeight - 0.5;
-          heroContainer.style.transform = `rotateY(${x * 5}deg) rotateX(${
-            y * -5
-          }deg)`;
+          const x = (e.clientX / window.innerWidth - 0.5) * 5;
+          const y = (e.clientY / window.innerHeight - 0.5) * -5;
+          heroContainer.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
         }, 30)
       );
     }
 
     // Split text animation
     $$(".split-text-animation").forEach((heading) => {
-      const words = heading.textContent.split(" ");
-      heading.innerHTML = words
+      heading.innerHTML = heading.textContent
+        .split(" ")
         .map((word, i) => `<span style="--word-index:${i}">${word} </span>`)
         .join("");
     });
@@ -464,10 +481,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     // Testimonial card expansion
-    $$(".testimonial-card").forEach((card) => {
-      card.addEventListener("click", function () {
-        this.classList.toggle("expanded");
-      });
+    document.addEventListener("click", (e) => {
+      const card = e.target.closest(".testimonial-card");
+      if (card) card.classList.toggle("expanded");
     });
 
     // Custom cursor (only for non-touch devices)
@@ -484,31 +500,50 @@ document.addEventListener("DOMContentLoaded", function () {
         }, 10)
       );
 
-      $$("a, button, .hero-btn, .social-link").forEach((el) => {
-        el.addEventListener("mouseenter", () => cursor.classList.add("hover"));
-        el.addEventListener("mouseleave", () =>
-          cursor.classList.remove("hover")
-        );
+      // Hover effects
+      document.addEventListener("mouseover", (e) => {
+        if (
+          e.target.matches("a, button, .hero-btn, .social-link") ||
+          e.target.closest("a, button, .hero-btn, .social-link")
+        ) {
+          cursor.classList.add("hover");
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        if (
+          e.target.matches("a, button, .hero-btn, .social-link") ||
+          e.target.closest("a, button, .hero-btn, .social-link")
+        ) {
+          cursor.classList.remove("hover");
+        }
       });
 
       document.documentElement.classList.add("custom-cursor-enabled");
     }
   }
 
+  // Cursor effects
   function initCursorEffects() {
     const { cursor, cursorShadow, shapes } = elements;
 
     // Only run cursor effects on devices that support hover
-    const hasHover = window.matchMedia("(hover: hover)").matches;
-    if (!hasHover || !cursor || !cursorShadow) return;
+    if (
+      !window.matchMedia("(hover: hover)").matches ||
+      !cursor ||
+      !cursorShadow
+    )
+      return;
 
     // Handle cursor movement
     document.addEventListener(
       "mousemove",
       throttle((e) => {
-        const cursorPos = { left: e.clientX + "px", top: e.clientY + "px" };
-        Object.assign(cursor.style, cursorPos);
-        Object.assign(cursorShadow.style, cursorPos);
+        // Update cursor positions
+        [cursor, cursorShadow].forEach((el) => {
+          el.style.left = `${e.clientX}px`;
+          el.style.top = `${e.clientY}px`;
+        });
 
         // Interact with floating shapes
         shapes.forEach((shape) => {
@@ -520,6 +555,7 @@ document.addEventListener("DOMContentLoaded", function () {
           const dy = e.clientY - shapeY;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
+          // Apply movement only when needed
           if (distance < 150) {
             const pushX = (dx / distance) * (150 - distance) * 0.2;
             const pushY = (dy / distance) * (150 - distance) * 0.2;
@@ -543,7 +579,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Pause animations when page is not visible
+  // Handle visibility changes
   document.addEventListener("visibilitychange", () => {
     const animationState = document.hidden ? "paused" : "running";
     elements.shapes?.forEach((shape) => {
@@ -551,14 +587,60 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Fix animations after orientation change on mobile
-  window.addEventListener("orientationchange", () => {
-    setTimeout(() => {
-      document.body.classList.add("orientation-changed");
-      setTimeout(
-        () => document.body.classList.remove("orientation-changed"),
-        50
-      );
-    }, 200);
-  });
+  // Initialize shapes animation
+  // Simplified version of the floating shapes animation
+  (function () {
+    const shapes = $$(".floating-shape");
+    const background = $(".animated-background");
+    if (!shapes.length || !background) return;
+
+    background.classList.add("interactive");
+
+    // Add animation CSS
+    const style = document.createElement("style");
+    style.textContent = `
+      .animated-background { perspective: 1000px; }
+      .floating-shape { 
+        will-change: transform, filter; 
+        transition: transform 0.3s ease-out;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .floating-shape { transition: none !important; animation: none !important; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Simplified shape interaction
+    let mouse = { x: 0, y: 0 };
+
+    document.addEventListener(
+      "mousemove",
+      throttle((e) => {
+        mouse = { x: e.clientX, y: e.clientY };
+
+        shapes.forEach((shape) => {
+          const rect = shape.getBoundingClientRect();
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+
+          const dx = mouse.x - centerX;
+          const dy = mouse.y - centerY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 200) {
+            const factor = 0.05 * (1 - Math.min(1, distance / 200));
+            shape.style.transform = `translate(${-dx * factor}px, ${
+              -dy * factor
+            }px)`;
+          } else {
+            shape.style.transform = "translate(0, 0)";
+          }
+        });
+      }, 20),
+      { passive: true }
+    );
+  })();
+
+  // Initialize all components
+  init();
 });
