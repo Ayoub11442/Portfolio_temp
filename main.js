@@ -1,26 +1,29 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // Cache DOM elements with reusable selector functions
+  // Cache DOM selectors
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => document.querySelectorAll(selector);
 
-  // Cache frequently used elements
+  // Essential elements
   const elements = {
     body: document.body,
     header: $("header"),
     menuToggle: $("#menuToggle"),
     navMenu: $("#mainNav"),
     scrollProgress: $(".scroll-progress"),
-    themeToggle: $("#themeToggle"),
     darkModeToggle: $("#darkModeToggle"),
     projectFilters: $$(".project-filter"),
     projectCards: $$(".project-card"),
-    navLinks: $$(".nav-link"),
     contactForm: $("#contactForm"),
     heroContainer: $(".hero-container"),
-    typedTextElement: $("#typed-text"), // Changed to ID selector for specificity
+    typedTextElement: $("#typed-text"),
+    navLinks: $$(".nav-link"),
+    sections: $$("section"),
+    cursor: $(".cursor"),
+    cursorShadow: $(".cursor-shadow"),
+    shapes: $$(".floating-shape"),
   };
 
-  // Throttle function for performance optimization
+  // Throttle for performance
   const throttle = (callback, delay = 100) => {
     let lastCall = 0;
     return function (...args) {
@@ -32,116 +35,97 @@ document.addEventListener("DOMContentLoaded", function () {
     };
   };
 
-  // Self-executing function to initialize all components
-  (() => {
-    // Initialize AOS Animation if available
-    if (typeof AOS !== "undefined") {
-      AOS.init({
-        duration: 800,
-        easing: "ease-in-out",
-        once: true,
-        mirror: false,
-      });
-    }
+  // Initialize all components
+  (function init() {
+    if (typeof AOS !== "undefined")
+      AOS.init({ duration: 800, easing: "ease-in-out", once: true });
 
-    // Initialize all functionality
-    initThemeToggle();
-    initMobileMenu();
-    initScrollEffects();
-    initProjectFilters();
-    initSmoothScrolling();
-    initContactForm();
-    initCustomAnimations();
-    initPopup();
-    initTypedText();
+    // Initialize all features
+    [
+      initThemeToggle,
+      initMobileMenu,
+      initScrollEffects,
+      initProjectFilters,
+      initSmoothScrolling,
+      initContactForm,
+      initCustomAnimations,
+      initPopup,
+      initTypedText,
+      initCursorEffects,
+    ].forEach((fn) => fn());
   })();
 
   function initTypedText() {
     const { typedTextElement } = elements;
+    if (!typedTextElement) return;
 
-    if (!typedTextElement) {
-      console.warn("Typed text element not found");
-      return;
-    }
+    const phrases = ["a Developer", "a Designer", "a Creator"];
 
-    // Use Typed.js if available, otherwise fallback to custom TypeWriter
     if (typeof Typed !== "undefined") {
       try {
         new Typed("#typed-text", {
-          strings: ["a Developer", "a Designer", "a Creator"],
+          strings: phrases,
           typeSpeed: 50,
           backSpeed: 30,
           loop: true,
-          startDelay: 500, // Slight delay for better UX
+          startDelay: 500,
         });
       } catch (error) {
-        console.error("Typed.js initialization failed:", error);
-        fallbackTypeWriter();
+        console.error("Typed.js error:", error);
+        initFallbackTypeWriter(typedTextElement, phrases);
       }
     } else {
-      console.warn("Typed.js not available, using fallback");
-      fallbackTypeWriter();
+      initFallbackTypeWriter(typedTextElement, phrases);
+    }
+  }
+
+  function initFallbackTypeWriter(element, phrases) {
+    class TypeWriter {
+      constructor(element, phrases, options = {}) {
+        this.element = element;
+        this.phrases = phrases;
+        this.typingSpeed = options.typingSpeed || 50;
+        this.pauseBetweenPhrases = options.pauseBetweenPhrases || 2000;
+        this.eraseSpeed = options.eraseSpeed || 30;
+        this.phraseIndex = 0;
+        this.charIndex = 0;
+        this.isDeleting = false;
+      }
+
+      type() {
+        const currentPhrase = this.phrases[this.phraseIndex];
+        this.element.textContent = currentPhrase.substring(
+          0,
+          this.isDeleting ? this.charIndex - 1 : this.charIndex + 1
+        );
+        this.charIndex += this.isDeleting ? -1 : 1;
+
+        const speedMultiplier = this.isDeleting ? 0.5 : 1;
+        let timeout = this.isDeleting
+          ? this.eraseSpeed
+          : this.typingSpeed * speedMultiplier;
+
+        if (!this.isDeleting && this.charIndex === currentPhrase.length) {
+          timeout = this.pauseBetweenPhrases;
+          this.isDeleting = true;
+        } else if (this.isDeleting && this.charIndex === 0) {
+          this.isDeleting = false;
+          this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
+          timeout = 500; // Pause before next phrase
+        }
+
+        setTimeout(() => this.type(), timeout);
+      }
+
+      start() {
+        this.type();
+      }
     }
 
-    function fallbackTypeWriter() {
-      const phrases = ["a Developer", "a Designer", "a Creator"];
-
-      class TypeWriter {
-        constructor(element, phrases, options = {}) {
-          this.element = element;
-          this.phrases = phrases;
-          this.typingSpeed = options.typingSpeed || 50;
-          this.pauseBetweenPhrases = options.pauseBetweenPhrases || 2000;
-          this.eraseSpeed = options.eraseSpeed || 30;
-          this.phraseIndex = 0;
-          this.charIndex = 0;
-          this.isDeleting = false;
-        }
-
-        type() {
-          const currentPhrase = this.phrases[this.phraseIndex];
-
-          if (this.isDeleting) {
-            this.element.textContent = currentPhrase.substring(
-              0,
-              this.charIndex - 1
-            );
-            this.charIndex--;
-          } else {
-            this.element.textContent = currentPhrase.substring(
-              0,
-              this.charIndex + 1
-            );
-            this.charIndex++;
-          }
-
-          const speedMultiplier = this.isDeleting ? 0.5 : 1;
-          let timeout = this.isDeleting
-            ? this.eraseSpeed
-            : this.typingSpeed * speedMultiplier;
-
-          if (!this.isDeleting && this.charIndex === currentPhrase.length) {
-            timeout = this.pauseBetweenPhrases;
-            this.isDeleting = true;
-          } else if (this.isDeleting && this.charIndex === 0) {
-            this.isDeleting = false;
-            this.phraseIndex = (this.phraseIndex + 1) % this.phrases.length;
-            timeout = 500; // Short pause before next phrase
-          }
-
-          setTimeout(() => this.type(), timeout);
-        }
-
-        start() {
-          this.type();
-        }
-      }
-
-      try {
-        new TypeWriter(typedTextElement, phrases).start();
-      } catch (error) {
-        console.error("Error initializing fallback typewriter:", error);
-      }
+    try {
+      new TypeWriter(element, phrases).start();
+    } catch (error) {
+      console.error("Fallback typewriter error:", error);
     }
   }
 
@@ -150,13 +134,13 @@ document.addEventListener("DOMContentLoaded", function () {
       document.body.insertAdjacentHTML(
         "beforeend",
         `
-          <div class="popup-overlay">
-            <div class="popup-container">
-              <span class="popup-close">&times;</span>
-              <div class="popup-content"></div>
-            </div>
+        <div class="popup-overlay">
+          <div class="popup-container">
+            <span class="popup-close">&times;</span>
+            <div class="popup-content"></div>
           </div>
-        `
+        </div>
+      `
       );
 
       const overlay = $(".popup-overlay");
@@ -180,8 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    const readMoreButtons = $$(".blog-content .btn.btn-outline");
-    readMoreButtons.forEach((button) => {
+    $$(".blog-content .btn.btn-outline").forEach((button) => {
       const newButton = button.cloneNode(true);
       button.parentNode.replaceChild(newButton, button);
 
@@ -205,7 +188,26 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const popupContent = $(".popup-content");
         if (popupContent) {
-          popupContent.innerHTML = generateArticleHTML(data);
+          popupContent.innerHTML = `
+            <div class="popup-article">
+              <div class="popup-header">
+                <span class="popup-category">${data.category}</span>
+                <span class="popup-date">${data.date}</span>
+              </div>
+              <h2 class="popup-title">${data.title}</h2>
+              <div class="popup-featured-image">
+                ${
+                  data.imageSrc
+                    ? `<img src="${data.imageSrc}" alt="${data.title}">`
+                    : ""
+                }
+              </div>
+              <div class="popup-text">
+                <p>${data.excerpt}</p>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+              </div>
+            </div>
+          `;
           const overlay = $(".popup-overlay");
           overlay.style.display = "flex";
           setTimeout(() => overlay.classList.add("active"), 10);
@@ -213,29 +215,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
     });
-
-    function generateArticleHTML(data) {
-      return `
-        <div class="popup-article">
-          <div class="popup-header">
-            <span class="popup-category">${data.category}</span>
-            <span class="popup-date">${data.date}</span>
-          </div>
-          <h2 class="popup-title">${data.title}</h2>
-          <div class="popup-featured-image">
-            ${
-              data.imageSrc
-                ? `<img src="${data.imageSrc}" alt="${data.title}">`
-                : ""
-            }
-          </div>
-          <div class="popup-text">
-            <p>${data.excerpt}</p>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          </div>
-        </div>
-      `;
-    }
   }
 
   function initThemeToggle() {
@@ -252,20 +231,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     darkModeToggle.addEventListener("click", () => {
       body.classList.toggle("dark-mode");
-      if (body.classList.contains("dark-mode")) {
-        themeIcon.classList.replace("fa-moon", "fa-sun");
-        localStorage.setItem("theme", "dark");
-      } else {
-        themeIcon.classList.replace("fa-sun", "fa-moon");
-        localStorage.setItem("theme", "light");
-      }
+      const isDarkMode = body.classList.contains("dark-mode");
+      themeIcon.classList.replace(
+        isDarkMode ? "fa-moon" : "fa-sun",
+        isDarkMode ? "fa-sun" : "fa-moon"
+      );
+      localStorage.setItem("theme", isDarkMode ? "dark" : "light");
     });
   }
 
   function initMobileMenu() {
-    const { menuToggle, navMenu, body } = elements;
-    const navLinks = $$(".nav-link");
-
+    const { menuToggle, navMenu, body, navLinks } = elements;
     if (!menuToggle || !navMenu) return;
 
     const toggleMenu = () => {
@@ -297,71 +273,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
     navLinks.forEach((link) => {
       link.addEventListener("click", () => {
-        if (navMenu.classList.contains("active")) {
-          toggleMenu();
-        }
+        if (navMenu.classList.contains("active")) toggleMenu();
       });
     });
 
     window.addEventListener("resize", () => {
-      if (window.innerWidth > 992) {
-        menuToggle.classList.remove("active");
-        navMenu.classList.remove("active");
-        body.classList.remove("menu-open");
-        const icon = menuToggle.querySelector("i");
-        if (icon) {
-          icon.classList.remove("fa-times");
-          icon.classList.add("fa-bars");
-        }
-      }
+      if (window.innerWidth > 992 && navMenu.classList.contains("active"))
+        toggleMenu();
     });
   }
 
   function initScrollEffects() {
-    const { header, scrollProgress } = elements;
-    const navLinks = $$(".nav-link");
-    const sections = $$("section");
+    const { header, scrollProgress, navLinks, sections } = elements;
 
     const handleScroll = throttle(() => {
       const scrollPos = window.scrollY;
 
       if (header) {
-        if (scrollPos > 50) {
-          header.classList.add("scrolled");
-          header.classList.remove("transparent");
-        } else {
-          header.classList.remove("scrolled");
-          header.classList.add("transparent");
-        }
+        header.classList.toggle("scrolled", scrollPos > 50);
+        header.classList.toggle("transparent", scrollPos <= 50);
       }
 
       if (scrollProgress) {
         const height =
           document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = (scrollPos / height) * 100;
-        scrollProgress.style.width = `${scrollPercent}%`;
+        scrollProgress.style.width = `${(scrollPos / height) * 100}%`;
       }
 
       if (sections.length && navLinks.length) {
         let current = "";
         sections.forEach((section) => {
-          const sectionTop = section.offsetTop - 100;
-          if (scrollPos >= sectionTop) {
+          if (scrollPos >= section.offsetTop - 100) {
             current = section.getAttribute("id");
           }
         });
 
         navLinks.forEach((link) => {
-          link.classList.remove("active");
-          if (link.getAttribute("href") === `#${current}`) {
-            link.classList.add("active");
-          }
+          link.classList.toggle(
+            "active",
+            link.getAttribute("href") === `#${current}`
+          );
         });
       }
     }, 50);
 
     window.addEventListener("scroll", handleScroll);
-    handleScroll();
+    handleScroll(); // Initial call
   }
 
   function initProjectFilters() {
@@ -421,7 +378,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       emailjs.init("YOUR_USER_ID");
     } catch (error) {
-      console.error("EmailJS initialization failed:", error);
+      console.error("EmailJS error:", error);
       return;
     }
 
@@ -467,6 +424,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function initCustomAnimations() {
     const { heroContainer, body } = elements;
 
+    // 3D hero container effect
     if (heroContainer) {
       document.addEventListener(
         "mousemove",
@@ -480,6 +438,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
     }
 
+    // Split text animation
     $$(".split-text-animation").forEach((heading) => {
       const words = heading.textContent.split(" ");
       heading.innerHTML = words
@@ -487,6 +446,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .join("");
     });
 
+    // Scroll animations with Intersection Observer
     const scrollObserver = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -503,12 +463,14 @@ document.addEventListener("DOMContentLoaded", function () {
       scrollObserver.observe(el)
     );
 
+    // Testimonial card expansion
     $$(".testimonial-card").forEach((card) => {
       card.addEventListener("click", function () {
         this.classList.toggle("expanded");
       });
     });
 
+    // Custom cursor (only for non-touch devices)
     if (!window.matchMedia("(pointer: coarse)").matches) {
       const cursor = document.createElement("div");
       cursor.classList.add("custom-cursor");
@@ -532,4 +494,71 @@ document.addEventListener("DOMContentLoaded", function () {
       document.documentElement.classList.add("custom-cursor-enabled");
     }
   }
+
+  function initCursorEffects() {
+    const { cursor, cursorShadow, shapes } = elements;
+
+    // Only run cursor effects on devices that support hover
+    const hasHover = window.matchMedia("(hover: hover)").matches;
+    if (!hasHover || !cursor || !cursorShadow) return;
+
+    // Handle cursor movement
+    document.addEventListener(
+      "mousemove",
+      throttle((e) => {
+        const cursorPos = { left: e.clientX + "px", top: e.clientY + "px" };
+        Object.assign(cursor.style, cursorPos);
+        Object.assign(cursorShadow.style, cursorPos);
+
+        // Interact with floating shapes
+        shapes.forEach((shape) => {
+          const rect = shape.getBoundingClientRect();
+          const shapeX = rect.left + rect.width / 2;
+          const shapeY = rect.top + rect.height / 2;
+
+          const dx = e.clientX - shapeX;
+          const dy = e.clientY - shapeY;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 150) {
+            const pushX = (dx / distance) * (150 - distance) * 0.2;
+            const pushY = (dy / distance) * (150 - distance) * 0.2;
+            shape.style.transform = `translate(${-pushX}px, ${-pushY}px)`;
+          } else {
+            shape.style.transform = "translate(0, 0)";
+          }
+        });
+      }, 30)
+    );
+
+    // Handle mouse down/up events
+    document.addEventListener("mousedown", () => {
+      cursorShadow.style.width = "50px";
+      cursorShadow.style.height = "50px";
+    });
+
+    document.addEventListener("mouseup", () => {
+      cursorShadow.style.width = "40px";
+      cursorShadow.style.height = "40px";
+    });
+  }
+
+  // Pause animations when page is not visible
+  document.addEventListener("visibilitychange", () => {
+    const animationState = document.hidden ? "paused" : "running";
+    elements.shapes?.forEach((shape) => {
+      shape.style.animationPlayState = animationState;
+    });
+  });
+
+  // Fix animations after orientation change on mobile
+  window.addEventListener("orientationchange", () => {
+    setTimeout(() => {
+      document.body.classList.add("orientation-changed");
+      setTimeout(
+        () => document.body.classList.remove("orientation-changed"),
+        50
+      );
+    }, 200);
+  });
 });
