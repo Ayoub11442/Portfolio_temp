@@ -640,7 +640,15 @@ document.addEventListener("DOMContentLoaded", () => {
       { passive: true }
     );
   })();
-
+  // Hide loader after page load
+  const loader = document.querySelector(".loader-container");
+  if (loader) {
+    setTimeout(() => {
+      loader.classList.add("hidden");
+      // Remove loader from DOM after animation
+      setTimeout(() => loader.remove(), 500);
+    }, 10000);
+  }
   // Initialize all components
   init();
 });
