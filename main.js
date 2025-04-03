@@ -640,15 +640,62 @@ document.addEventListener("DOMContentLoaded", () => {
       { passive: true }
     );
   })();
-  // Hide loader after page load
-  const loader = document.querySelector(".loader-container");
-  if (loader) {
-    setTimeout(() => {
-      loader.classList.add("hidden");
-      // Remove loader from DOM after animation
-      setTimeout(() => loader.remove(), 500);
-    }, 10000);
-  }
+
   // Initialize all components
   init();
+});
+// Add this at the beginning of your DOMContentLoaded event handler
+document.addEventListener("DOMContentLoaded", () => {
+  // Add loading class to body
+  document.body.classList.add("loading");
+
+  // Initialize loader
+  // Replace the loader code with this updated version
+  const loader = {
+    wrapper: document.querySelector(".loader-wrapper"),
+    dots: document.querySelector(".loading-text .dots"),
+
+    init() {
+      // Show loader
+      if (this.wrapper) {
+        this.wrapper.style.display = "flex";
+        document.body.classList.add("loading");
+      }
+
+      // Start dots animation
+      if (this.dots) {
+        this.animateDots();
+      }
+
+      // Hide loader when page is fully loaded
+      window.addEventListener("load", () => {
+        this.hide();
+      });
+
+      // Fallback: Hide loader after 5 seconds if load event doesn't fire
+      setTimeout(() => this.hide(), 5000);
+    },
+
+    animateDots() {
+      let count = 0;
+      setInterval(() => {
+        count = (count + 1) % 4;
+        this.dots.textContent = ".".repeat(count);
+      }, 500);
+    },
+
+    hide() {
+      if (this.wrapper) {
+        this.wrapper.classList.add("hidden");
+        // Remove loader and re-enable scrolling
+        setTimeout(() => {
+          this.wrapper.style.display = "none";
+          document.body.classList.remove("loading");
+          document.body.style.overflow = ""; // Reset overflow to default
+        }, 500);
+      }
+    },
+  };
+  // Initialize loader
+  loader.init();
 });

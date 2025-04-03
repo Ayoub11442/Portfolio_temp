@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Professional Page Loader</title>
+    <style>
+        /* Global styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f7f7f7;
+            color: #333;
+            overflow-x: hidden;
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #9b59b6;
+            --error-color: #e74c3c;
+            --background-color: #ffffff;
+            --text-color: #555;
+            --card-bg: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        
+        /* Loader container */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        
+        /* Theme and settings toggles */
+        .loader-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .control-button {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--text-color);
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+        
+        .control-button:hover {
+            opacity: 1;
+            transform: translateY(-3px);
+        }
+        
+        /* Main loader */
+        .loader {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 80%;
+        }
+        
+        /* Logo with particles */
+        .logo-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        .logo svg {
+            width: 100px;
+            height: 100px;
+            fill: var(--primary-color);
+            transition: fill 0.3s ease;
+        }
+        
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .particle {
+            position: absolute;
+            background-color: var(--primary-color);
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            opacity: 0;
+        }
+        
+        /* Advanced spinner with glow */
+        .spinner-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        
+        .spinner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .spinner-circle {
+            width: 100%;
+            height: 100%;
+            border: 4px solid rgba(241, 241, 241, 0.3);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            filter: drop-shadow(0 0 5px var(--primary-color));
+        }
+        
+        .spinner-inner {
+            position: absolute;
+            top: 15%;
+            left: 15%;
+            width: 70%;
+            height: 70%;
+            border: 4px solid rgba(241, 241, 241, 0.3);
+            border-top-color: var(--secondary-color);
+            border-radius: 50%;
+            animation: spin-reverse 1s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            filter: drop-shadow(0 0 3px var(--secondary-color));
+        }
+        
+        .spinner-core {
+            position: absolute;
+            top: 32.5%;
+            left: 32.5%;
+            width: 35%;
+            height: 35%;
+            border: 3px solid rgba(241, 241, 241, 0.3);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+            filter: drop-shadow(0 0 2px var(--accent-color));
+        }
+        
+        /* Error state styling */
+        .spinner-container.error .spinner-circle {
+            border-top-color: var(--error-color);
+            animation-duration: 0.5s;
+            filter: drop-shadow(0 0 5px var(--error-color));
+        }
+        
+        .spinner-container.error .spinner-inner {
+            border-top-color: var(--error-color);
+            animation-duration: 0.5s;
+            filter: drop-shadow(0 0 3px var(--error-color));
+        }
+        
+        .spinner-container.error .spinner-core {
+            border-top-color: var(--error-color);
+            animation-duration: 0.5s;
+            filter: drop-shadow(0 0 2px var(--error-color));
+        }
+        
+        /* Progress indicator with animated elements */
+        .progress-container {
+            margin-top: 30px;
+            width: 250px;
+            position: relative;
+        }
+        
+        .progress {
+            width: 100%;
+            height: 8px;
+            background-color: rgba(241, 241, 241, 0.7);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                         rgba(255,255,255,0) 0%, 
+                         rgba(255,255,255,0.3) 50%, 
+                         rgba(255,255,255,0) 100%);
+            animation: shimmer 1.5s infinite;
+        }
+        
+        .progress-percentage {
+            position: absolute;
+            right: -40px;
+            top: -5px;
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+        
+        .progress-steps {
+            position: relative;
+            margin-top: 15px;
+            width: 100%;
+            height: 20px;
+        }
+        
+        .step {
+            position: absolute;
+            top: 0;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(241, 241, 241, 0.7);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+        
+        .step.active {
+            background-color: var(--primary-color);
+            color: white;
+            transform: scale(1.2);
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.5);
+        }
+        
+        .step:nth-child(1) { left: 0%; }
+        .step:nth-child(2) { left: 25%; }
+        .step:nth-child(3) { left: 50%; }
+        .step:nth-child(4) { left: 75%; }
+        .step:nth-child(5) { left: 100%; transform: translateX(-100%); }
+        
+        .step.active:nth-child(1) { background-color: var(--primary-color); }
+        .step.active:nth-child(2) { background-color: #4aa3df; }
+        .step.active:nth-child(3) { background-color: #5dade2; }
+        .step.active:nth-child(4) { background-color: #4caf50; }
+        .step.active:nth-child(5) { background-color: var(--secondary-color); }
+        
+        /* Loading text with dynamic animation */
+        .loading-text-container {
+            margin-top: 25px;
+            height: 24px;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            color: var(--text-color);
+            letter-spacing: 0.5px;
+            animation: typewriter 3s steps(40) infinite;
+            white-space: nowrap;
+            overflow: hidden;
+            border-right: 2px solid var(--primary-color);
+            margin: 0 auto;
+        }
+        
+        /* Resource loading visualization */
+        .resources-container {
+            margin-top: 30px;
+            width: 250px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .resource-item {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            background-color: rgba(241, 241, 241, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .resource-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background-color: var(--primary-color);
+            opacity: 0.7;
+            transition: height 0.5s ease;
+        }
+        
+        .resource-item.loaded::after {
+            height: 100%;
+        }
+        
+        .resource-item.error::after {
+            background-color: var(--error-color);
+        }
+        
+        /* Fun facts with card styling */
+        .fun-fact-container {
+            margin-top: 30px;
+            max-width: 400px;
+            padding: 15px;
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .fun-fact-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .fun-fact-heading {
+            font-size: 14px;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .fun-fact {
+            font-size: 14px;
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+        
+        /* Custom loading indicators */
+        .connectivity-indicator {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .connectivity-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(241, 241, 241, 0.7);
+        }
+        
+        .connectivity-dot.active {
+            background-color: var(--primary-color);
+            animation: pulse-dot 1s infinite;
+        }
+        
+        /* Error message styling */
+        .error-message {
+            margin-top: 20px;
+            padding: 10px 15px;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-left: 3px solid var(--error-color);
+            border-radius: 4px;
+            color: var(--error-color);
+            font-size: 14px;
+            display: none;
+        }
+        
+        .error-message.visible {
+            display: block;
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        /* Retry button */
+        .retry-button {
+            margin-top: 15px;
+            padding: 8px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: none;
+            transition: all 0.3s ease;
+        }
+        
+        .retry-button.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .retry-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Performance indicator */
+        .performance {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+        
+        /* Main content (Empty) */
+        main {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 1s ease;
+        }
+        
+        main.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Dark mode styles */
+        body.dark-mode {
+            --primary-color: #4dabf7;
+            --secondary-color: #51cf66;
+            --accent-color: #cc5de8;
+            --error-color: #ff6b6b;
+            --background-color: #222;
+            --text-color: #e0e0e0;
+            --card-bg: #333;
+            background-color: #2a2a2a;
+            color: #e0e0e0;
+        }
+        
+        /* Color theme options */
+        body.theme-blue {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --accent-color: #9b59b6;
+        }
+        
+        body.theme-green {
+            --primary-color: #2ecc71;
+            --secondary-color: #3498db;
+            --accent-color: #f39c12;
+        }
+        
+        body.theme-purple {
+            --primary-color: #9b59b6;
+            --secondary-color: #e74c3c;
+            --accent-color: #3498db;
+        }
+        
+        body.theme-orange {
+            --primary-color: #e67e22;
+            --secondary-color: #3498db;
+            --accent-color: #2ecc71;
+        }
+        
+        /* Animation keyframes */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes spin-reverse {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(-360deg); }
+        }
+        
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; transform: translateY(10px); }
+            50% { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes pulse-dot {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.5); opacity: 1; }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes typewriter {
+            0% { width: 0; }
+            50% { width: 100%; }
+            100% { width: 0; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        @keyframes floatParticle {
+            0% { transform: translate(0, 0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .progress-container {
+                width: 200px;
+            }
+            
+            .resources-container {
+                width: 200px;
+            }
+            
+            .fun-fact-container {
+                max-width: 300px;
+                padding: 12px;
+            }
+            
+            .logo-container {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .logo svg {
+                width: 80px;
+                height: 80px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .progress-container {
+                width: 160px;
+            }
+            
+            .resources-container {
+                width: 160px;
+            }
+            
+            .fun-fact-container {
+                max-width: 250px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body class="theme-blue">
+    <!-- Loader overlay -->
+    <div class="loader-container" id="loaderContainer">
+        <div class="loader-controls">
+            <button class="control-button" id="themeToggle">🌓</button>
+            <button class="control-button" id="colorThemeToggle">🎨</button>
+            <button class="control-button" id="settingsToggle">⚙️</button>
+        </div>
+        
+        <div class="loader">
+            <!-- Logo with particles -->
+            <div class="logo-container">
+                <div class="logo">
+                    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="50" r="35" />
+                        <path d="M50 15 L50 85" stroke="#ffffff" stroke-width="5" stroke-linecap="round" transform="rotate(45, 50, 50)" />
+                        <path d="M50 15 L50 85" stroke="#ffffff" stroke-width="5" stroke-linecap="round" transform="rotate(-45, 50, 50)" />
+                    </svg>
+                </div>
+                <div class="particles" id="particles"></div>
+            </div>
+            
+            <!-- Advanced spinner -->
+            <div class="spinner-container" id="spinnerContainer">
+                <div class="spinner">
+                    <div class="spinner-circle"></div>
+                    <div class="spinner-inner"></div>
+                    <div class="spinner-core"></div>
+                </div>
+            </div>
+            
+            <!-- Progress indicator with steps -->
+            <div class="progress-container">
+                <div class="progress">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-percentage" id="progressPercentage">0%</div>
+                <div class="progress-steps">
+                    <div class="step" data-step="1">1</div>
+                    <div class="step" data-step="2">2</div>
+                    <div class="step" data-step="3">3</div>
+                    <div class="step" data-step="4">4</div>
+                    <div class="step" data-step="5">5</div>
+                </div>
+            </div>
+            
+            <!-- Loading text -->
+            <div class="loading-text-container">
+                <div class="loading-text" id="loadingText">Loading resources...</div>
+            </div>
+            
+            <!-- Resource loading visualization -->
+            <div class="resources-container" id="resourcesContainer"></div>
+            
+            <!-- Connectivity indicator -->
+            <div class="connectivity-indicator">
+                <div class="connectivity-dot"></div>
+                <div class="connectivity-dot"></div>
+                <div class="connectivity-dot"></div>
+                <div class="connectivity-dot"></div>
+            </div>
+            
+            <!-- Fun facts section -->
+            <div class="fun-fact-container" id="funFactContainer">
+                <div class="fun-fact-heading">Did you know?</div>
+                <div class="fun-fact" id="funFact"></div>
+            </div>
+            
+            <!-- Error message -->
+            <div class="error-message" id="errorMessage">
+                There was an error loading some resources. Please check your connection.
+            </div>
+            
+            <!-- Retry button -->
+            <button class="retry-button" id="retryButton">Retry Loading</button>
+            
+            <!-- Performance indicator -->
+            <div class="performance" id="performanceIndicator"></div>
+        </div>
+    </div>
+    
+    <!-- Empty main content (as requested) -->
+    <main id="mainContent"></main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loading messages to display
+            const loadingMessages = [
+                'Loading essential resources...',
+                'Preparing assets and modules...',
+                'Optimizing content delivery...',
+                'Establishing secure connection...',
+                'Loading application framework...',
+                'Generating user interface...',
+                'Checking for updates...',
+                'Processing application data...',
+                'Initializing components...',
+                'Applying style preferences...',
+                'Starting up services...',
+                'Almost there...'
+            ];
+            
+            // Fun facts to display during loading
+            const funFacts = [
+                "The first webpage went live on August 6, 1991.",
+                "The average webpage size is now over 2MB, compared to just 14KB in 1995.",
+                "Over 500 hours of video are uploaded to YouTube every minute.",
+                "The first computer bug was an actual moth trapped in a computer in 1947.",
+                "The most expensive domain name ever sold was Cars.com for $872 million.",
+                "The first 1GB hard disk drive was announced in 1980 and weighed about 550 pounds.",
+                "About 90% of the world's data has been created in the last two years.",
+                "The word 'robot' comes from the Czech word 'robota' meaning forced labor.",
+                "The first computer mouse was made of wood.",
+                "The first website is still online at info.cern.ch.",
+                "There are approximately 1.13 billion websites on the internet.",
+                "The @ symbol used in email addresses is called an 'amphora' in Italian.",
+                "The first domain name ever registered was Symbolics.com on March 15, 1985.",
+                "The first public demonstration of online gaming took place in 1974.",
+                "The first smartphone was created by IBM in 1992."
+            ];
+            
+            // Resource types for visualization
+            const resourceTypes = [
+                'JavaScript', 'CSS', 'HTML', 'Fonts', 'Images', 
+                'Data', 'Config', 'Media', 'API', 'Modules'
+            ];
+            
+            // Get elements
+            const loaderContainer = document.getElementById('loaderContainer');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const loadingText = document.getElementById('loadingText');
+            const mainContent = document.getElementById('mainContent');
+            const funFactContainer = document.getElementById('funFactContainer');
+            const funFactElement = document.getElementById('funFact');
+            const themeToggle = document.getElementById('themeToggle');
+            const colorThemeToggle = document.getElementById('colorThemeToggle');
+            const settingsToggle = document.getElementById('settingsToggle');
+            const resourcesContainer = document.getElementById('resourcesContainer');
+            const spinnerContainer = document.getElementById('spinnerContainer');
+            const errorMessage = document.getElementById('errorMessage');
+            const retryButton = document.getElementById('retryButton');
+            const performanceIndicator = document.getElementById('performanceIndicator');
+            const particles = document.getElementById('particles');
+            
+            let progress = 0;
+            let messageIndex = 0;
+            let funFactIndex = 0;
+            let funFactInterval;
+            let targetProgress = 0;
+            let animationSpeed = 1;
+            let startTime = performance.now();
+            let colorThemeIndex = 0;
+            let resourceItems = [];
+            let connectivityDots = document.querySelectorAll('.connectivity-dot');
+            let steps = document.querySelectorAll('.step');
+            let currentStep = 0;
+            let errorSimulated = false;
+            const colorThemes = ['theme-blue', 'theme-green', 'theme-purple', 'theme-orange'];
+            let errorChance = 0.05; // 5% chance of simulated resource loading error
+            
+            // Create particles for logo animation
+            function createParticles() {
+                particles.innerHTML = '';
+                const particleCount = 20;
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    
+                    // Random position around the center
+                    const angle = Math.random() * Math.PI * 2;
+                    const distance = 30 + Math.random() * 20;
+                    const x = 75 + Math.cos(angle) * distance;
+                    const y = 75 + Math.sin(angle) * distance;
+                    
+                    // Random movement direction
+                    const tx = (Math.random() - 0.5) * 100;
+                    const ty = (Math.random() - 0.5) * 100;
+                    
+                    // Set styles
+                    particle.style.left = `${x}px`;
+                    particle.style.top = `${y}px`;
+                    particle.style.setProperty('--tx', `${tx}px`);
+                    particle.style.setProperty('--ty', `${ty}px`);
+                    
+                    // Randomize animation
+                    const duration = 2 + Math.random() * 3;
+                    const delay = Math.random() * 2;
+                    
+                    particle.style.animation = `floatParticle ${duration}s ease-out ${delay}s infinite`;
+                    
+                    particles.appendChild(particle);
+                }
+            }
+            
+            // Create resource loading items
+            function createResourceItems() {
+                resourcesContainer.innerHTML = '';
+                resourceItems = [];
+                
+                const totalResources = 20;
+                
+                for (let i = 0; i < totalResources; i++) {
+                    const item = document.createElement('div');
+                    item.classList.add('resource-item');
+                    item.setAttribute('data-type', resourceTypes[i % resourceTypes.length]);
+                    item.setAttribute('data-id', i);
+                    
+                    // Tooltip with resource type
+                    item.title = resourceTypes[i % resourceTypes.length];
+                    
+                    resourcesContainer.appendChild(item);
+                    resourceItems.push(item);
+                }
+            }
+            
+            // Update resource loading status
+            function updateResourceLoading(completedPercentage) {
+                const totalResources = resourceItems.length;
+                const resourcesToLoad = Math.floor(totalResources * (completedPercentage / 100));
+                
+                for (let i = 0; i < resourcesToLoad; i++) {
+                    if (!resourceItems[i].classList.contains('loaded')) {
+                        resourceItems[i].classList.add('loaded');
+                        
+                        // Simulate random loading error
+                        if (Math.random() < errorChance && !errorSimulated) {
+                            resourceItems[i].classList.add('error');
+                            simulateError();
+                            errorSimulated = true;
+                        }
+                    }
+                }
+            }
+            
+            // Update progress step indicators
+            function updateSteps(progress) {
+                const newStep = Math.min(Math.floor(progress / 20), 4);
+                
+                if (newStep > currentStep) {
+                    for (let i = 0; i <= newStep; i++) {
+                        steps[i].classList.add('active');
+                    }
+                    currentStep = newStep;
+                }
+            }
+            
+            // Update connectivity animation
+            function updateConnectivity() {
+                // Clear existing actives
+                connectivityDots.forEach(dot => {
+                    dot.classList.remove('active');
+                });
+                
+                // Random connectivity pattern
+                const activeDots = 1 + Math.floor(Math.random() * 3); // 1-3 active dots
+                
+                for (let i = 0; i < activeDots; i++) {
+                    const randomIndex = Math.floor(Math.random() * connectivityDots.length);
+                    connectivityDots[randomIndex].classList.add('active');
+                }
+            }
+            
+            // Simulate a loading error
+            function simulateError() {
+                // Show error message with animation
+                errorMessage.classList.add('visible');
+                
+                // Show retry button
+                retryButton.classList.add('visible');
+                
+                // Add error state to spinner
+                spinnerContainer.classList.add('error');
+                
+                // Pause loading
+                loading = false;
+            }
+            
+            // Retry loading after error
+            function retryLoading() {
+                // Hide error elements
+                errorMessage.classList.remove('visible');
+                retryButton.classList.remove('visible');
+                spinnerContainer.classList.remove('error');
+                
+                // Remove error states from resources
+                resourceItems.forEach(item => {
+                    if (item.classList.contains('error')) {
+                        item.classList.remove('error');
+                    }
+                });
+                
+                errorSimulated = false;
+                
+                // Resume loading
+                loading = true;
+                updateProgress();
+            }
+            
+// Theme toggle functionality
+themeToggle.addEventListener('click', function() {
+    document.body.classList.toggle('dark-mode');
+});
+
+// Color theme toggle
+colorThemeToggle.addEventListener('click', function() {
+    // Remove current theme
+    document.body.classList.remove(colorThemes[colorThemeIndex]);
+    
+    // Move to next theme
+    colorThemeIndex = (colorThemeIndex + 1) % colorThemes.length;
+    
+    // Apply new theme
+    document.body.classList.add(colorThemes[colorThemeIndex]);
+});
+
+// Settings toggle placeholder (could expand this)
+settingsToggle.addEventListener('click', function() {
+    // Toggle animation speed as a simple setting
+    animationSpeed = animationSpeed === 1 ? 2 : 1;
+    
+    // Flash animation to indicate change
+    this.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+        this.style.transform = 'scale(1)';
+    }, 300);
+});
+
+// Retry button event
+retryButton.addEventListener('click', retryLoading);
+
+// Initialize fun facts
+function showFunFact() {
+    funFactElement.textContent = funFacts[funFactIndex];
+    funFactIndex = (funFactIndex + 1) % funFacts.length;
+    
+    // Make it visible with animation
+    funFactContainer.classList.add('visible');
+}
+
+// Rotate loading messages
+function rotateLoadingMessages() {
+    loadingText.textContent = loadingMessages[messageIndex];
+    messageIndex = (messageIndex + 1) % loadingMessages.length;
+}
+
+// Main progress update function
+function updateProgress() {
+    if (!loading) return;
+    
+    // Set target progress
+    if (progress < 100) {
+        // Random progress increment with decreasing speed near end
+        const remaining = 100 - progress;
+        const increment = remaining > 50 
+            ? 1 + Math.random() * 5 
+            : 0.5 + (Math.random() * remaining / 20);
+            
+        targetProgress = Math.min(progress + increment, 100);
+    }
+    
+    // Smooth progress animation
+    if (progress < targetProgress) {
+        progress += (targetProgress - progress) * 0.1 * animationSpeed;
+        
+        if (targetProgress - progress < 0.1) {
+            progress = targetProgress;
+        }
+        
+        // Update UI
+        progressBar.style.width = `${progress}%`;
+        progressPercentage.textContent = `${Math.round(progress)}%`;
+        
+        // Update resource loading visualization
+        updateResourceLoading(progress);
+        
+        // Update step indicators
+        updateSteps(progress);
+        
+        // Update performance indicator
+        const currentTime = performance.now();
+        const elapsedTime = ((currentTime - startTime) / 1000).toFixed(1);
+        performanceIndicator.textContent = `Loading time: ${elapsedTime}s`;
+        
+        // Check for completion
+        if (progress >= 100) {
+            completeLoading();
+        }
+    }
+    
+    requestAnimationFrame(updateProgress);
+}
+
+// Complete loading process
+function completeLoading() {
+    // Small delay before hiding loader
+    setTimeout(() => {
+        // Hide loader with animation
+        loaderContainer.style.opacity = '0';
+        loaderContainer.style.transform = 'translateY(-20px)';
+        
+        // Show main content with animation
+        mainContent.classList.add('visible');
+        
+        // Remove loader after animation completes
+        setTimeout(() => {
+            loaderContainer.style.display = 'none';
+        }, 800);
+    }, 500);
+    
+    // Clear intervals
+    clearInterval(funFactInterval);
+}
+
+// Initialize the loader
+function initLoader() {
+    // Create particles
+    createParticles();
+    
+    // Create resource items
+    createResourceItems();
+    
+    // Show first fun fact
+    setTimeout(showFunFact, 1000);
+    
+    // Set interval for fun facts
+    funFactInterval = setInterval(showFunFact, 5000);
+    
+    // Set interval for loading messages
+    setInterval(rotateLoadingMessages, 3000);
+    
+    // Set interval for connectivity animation
+    setInterval(updateConnectivity, 800);
+    
+    // Begin loading
+    progress = 0;
+    targetProgress = 0;
+    loading = true;
+    startTime = performance.now();
+    
+    // Start progress animation
+    updateProgress();
+}
+
+// Add simulated content load delay
+let loading = false;
+setTimeout(initLoader, 500);
+});
+</script>
+</body>
+</html>
