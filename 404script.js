@@ -1,221 +1,323 @@
-// Wait for DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Initialize all features
-  initializeSpace();
-  setupEventListeners();
-  incrementCounter();
-});
-
-// Initialize space elements
-function initializeSpace() {
-  // Ensure the stars container exists
-  if (!document.querySelector(".stars")) {
-    const starsContainer = document.createElement("div");
-    starsContainer.classList.add("stars");
-    document.body.appendChild(starsContainer);
-  }
-
-  createStars();
-  createMeteors();
-
-  // Set initial mode based on user preference
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    document.body.classList.add("dark-mode");
-    updateModeText();
-  }
-}
-
-// Create stars
-function createStars() {
-  const stars =
-    document.querySelector(".stars") || document.getElementById("stars");
-  if (!stars) return;
-
-  const starCount = 200;
-
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement("div");
-    star.classList.add("star");
-
-    // Random size between 1-3px
-    const size = Math.random() * 2 + 1;
-    star.style.width = `${size}px`;
-    star.style.height = `${size}px`;
-
-    // Random position
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-
-    // Different twinkle speeds
-    star.style.animationDuration = `${Math.random() * 3 + 1}s`;
-    star.style.animationDelay = `${Math.random() * 3}s`;
-
-    stars.appendChild(star);
-  }
-}
-
-// Create meteors
-function createMeteors() {
-  const meteorsDiv = document.getElementById("meteors");
-  const container = meteorsDiv || document.body;
-
-  // Create a meteor every few seconds
-  setInterval(
-    () => {
-      const meteor = document.createElement("div");
-      meteor.classList.add("meteor");
-
-      if (meteorsDiv) {
-        // First implementation style
-        meteor.style.top = `${Math.random() * 50}%`;
-        meteor.style.left = `${Math.random() * 50 + 50}%`;
-      } else {
-        // Second implementation style
-        const startPosition = Math.random() * window.innerWidth;
-        meteor.style.left = `${startPosition}px`;
-        meteor.style.top = "0px";
-
-        // Random size and speed
-        const size = Math.random() * 2 + 1;
-        const duration = Math.random() * 3 + 1;
-        meteor.style.width = `${size}px`;
-        meteor.style.height = `${size * 30}px`;
-        meteor.style.animationDuration = `${duration}s`;
-
-        // Random angle variation
-        const angle = 45 + (Math.random() * 10 - 5);
-        meteor.style.transform = `rotate(${angle}deg)`;
-
-        // Set timeout for removal based on animation duration
-        setTimeout(() => {
-          meteor.remove();
-        }, duration * 1000);
-      }
-
-      container.appendChild(meteor);
-
-      // Remove meteor after animation (for first implementation)
-      if (meteorsDiv) {
-        setTimeout(() => {
-          meteor.remove();
-        }, 2000);
-      }
-    },
-    meteorsDiv ? 4000 : 800
-  ); // Different intervals for different implementations
-}
-
-// Set up event listeners
-function setupEventListeners() {
-  // Set up dark mode toggle if it exists
-  const toggleButton =
-    document.querySelector(".toggle-btn") ||
-    document.getElementById("mode-toggle");
-  if (toggleButton) {
-    toggleButton.addEventListener("click", toggleDarkMode);
-  }
-
-  // Set up search functionality
-  const searchButton = document.getElementById("search-button");
-  if (searchButton) {
-    searchButton.addEventListener("click", handleSearch);
-
-    const searchInput = document.getElementById("search-input");
-    if (searchInput) {
-      searchInput.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-          handleSearch();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <style>
+        :root {
+            --primary-color: #8e2de2;
+            --secondary-color: #4a00e0;
+            --text-color: #fff;
+            --text-secondary: #cccccc;
+            --bg-color: #000;
+            --content-bg: rgba(0, 0, 0, 0.7);
         }
-      });
-    }
-  }
-
-  // Set up other buttons if they exist
-  const reportButton = document.getElementById("report-button");
-  if (reportButton) {
-    reportButton.addEventListener("click", reportIssue);
-  }
-
-  const sitemapButton = document.getElementById("sitemap-button");
-  if (sitemapButton) {
-    sitemapButton.addEventListener("click", showSitemap);
-  }
-
-  const easterEggButton = document.getElementById("easter-egg");
-  if (easterEggButton) {
-    easterEggButton.addEventListener("click", showEasterEgg);
-  }
-}
-
-// Toggle dark mode
-function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
-  updateModeText();
-}
-
-// Update mode text
-function updateModeText() {
-  const modeText = document.getElementById("mode-text");
-  if (modeText) {
-    modeText.textContent = document.body.classList.contains("dark-mode")
-      ? "Light Mode"
-      : "Dark Mode";
-  }
-}
-
-// Handle search
-function handleSearch() {
-  const searchInput = document.getElementById("search-input");
-  if (searchInput && searchInput.value.trim() !== "") {
-    alert(
-      `Searching for "${searchInput.value}" in our galaxy... No results found in this universe.`
-    );
-  }
-}
-
-// Mock reporting issue
-function reportIssue() {
-  alert(
-    "Thanks for reporting this issue! Our space engineers have been notified."
-  );
-}
-
-// Mock showing sitemap
-function showSitemap() {
-  alert(
-    "Our sitemap would normally appear here to help you navigate to working pages."
-  );
-}
-
-// Easter egg function
-function showEasterEgg() {
-  const messages = [
-    "Did you know? There are more 404 pages on the internet than there are stars in our solar system!",
-    "Fun fact: The first 404 error was discovered in 1992, when a CERN web server couldn't find a document.",
-    "Secret code unlocked: You've found the hidden message! Try konami code: ↑↑↓↓←→←→BA",
-    "You've discovered a cosmic wormhole! Unfortunately, it still doesn't lead to the page you wanted.",
-  ];
-
-  alert(messages[Math.floor(Math.random() * messages.length)]);
-}
-
-// Increment error counter
-function incrementCounter() {
-  const counter = document.getElementById("count");
-  if (!counter) return;
-
-  let count = parseInt(counter.textContent || "0");
-
-  // Get from localStorage if available
-  const savedCount = localStorage.getItem("404count");
-  if (savedCount) {
-    count = parseInt(savedCount);
-  }
-
-  count++;
-  counter.textContent = count;
-  localStorage.setItem("404count", count);
-}
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        
+        .content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2.5rem;
+            background-color: var(--content-bg);
+            border-radius: 16px;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 0 30px rgba(142, 45, 226, 0.3);
+            max-width: 550px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .content:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 40px rgba(142, 45, 226, 0.5);
+        }
+        
+        h1 {
+            font-size: clamp(5rem, 15vw, 10rem);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+        }
+        
+        p {
+            font-size: clamp(1rem, 3vw, 1.5rem);
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+        
+        .home-btn {
+            display: inline-block;
+            padding: 0.9rem 2.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(74, 0, 224, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .home-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(74, 0, 224, 0.6);
+        }
+        
+        .home-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .home-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: translateX(-100%);
+        }
+        
+        .home-btn:hover::after {
+            animation: shine 1.5s infinite;
+        }
+        
+        @keyframes shine {
+            100% {
+                transform: translateX(100%);
+            }
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 1;
+            box-shadow: inset -10px -10px 40px rgba(0, 0, 0, 0.8), 
+                        0 0 50px rgba(138, 43, 226, 0.5);
+            opacity: 0.8;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(10px, -15px) rotate(5deg); }
+            50% { transform: translate(0, -25px) rotate(10deg); }
+            75% { transform: translate(-10px, -15px) rotate(5deg); }
+        }
+        
+        @media (max-width: 600px) {
+            .content {
+                padding: 1.5rem;
+                margin: 0 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <canvas class="stars" id="stars"></canvas>
+    
+    <div class="content">
+        <h1>404</h1>
+        <p>Oops! You've ventured into the void of space.</p>
+        <p>The page you're looking for has drifted beyond our universe.</p>
+        <button class="home-btn" id="homeBtn">Return to Earth</button>
+    </div>
+    
+    <script>
+        (() => {
+            // Use immediately invoked function expression for scope isolation
+            const canvas = document.getElementById('stars');
+            const ctx = canvas.getContext('2d');
+            const planets = [];
+            let stars = [];
+            let animationFrameId;
+            
+            // Improved performance with throttling
+            function throttle(callback, delay) {
+                let lastCall = 0;
+                return function(...args) {
+                    const now = Date.now();
+                    if (now - lastCall >= delay) {
+                        lastCall = now;
+                        callback(...args);
+                    }
+                };
+            }
+            
+            // Set canvas size with device pixel ratio
+            function setupCanvas() {
+                const dpr = window.devicePixelRatio || 1;
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                canvas.style.width = `${width}px`;
+                canvas.style.height = `${height}px`;
+                ctx.scale(dpr, dpr);
+                
+                initStars(width, height);
+                createPlanets(width, height);
+            }
+            
+            // Initialize stars with better performance
+            function initStars(width, height) {
+                stars = [];
+                const density = width < 600 ? 700 : 1200;
+                const numStars = Math.floor(width * height / density);
+                
+                for (let i = 0; i < numStars; i++) {
+                    stars.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        radius: Math.random() * 1.5 + 0.5,
+                        vx: (Math.random() - 0.5) * 0.2,
+                        vy: (Math.random() - 0.5) * 0.2,
+                        alpha: Math.random() * 0.7 + 0.3,
+                        alphaChange: Math.random() * 0.005
+                    });
+                }
+            }
+            
+            // Batch draw stars for better performance
+            function animate() {
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                ctx.clearRect(0, 0, width, height);
+                
+                // Use a single path for all stars
+                ctx.beginPath();
+                
+                stars.forEach(star => {
+                    // Update star position
+                    star.x += star.vx;
+                    star.y += star.vy;
+                    
+                    // Twinkle effect
+                    star.alpha += star.alphaChange;
+                    if (star.alpha > 1 || star.alpha < 0.3) {
+                        star.alphaChange = -star.alphaChange;
+                    }
+                    
+                    // Efficient boundary wrapping
+                    if (star.x < 0) star.x = width;
+                    else if (star.x > width) star.x = 0;
+                    if (star.y < 0) star.y = height;
+                    else if (star.y > height) star.y = 0;
+                    
+                    // Add star to path
+                    ctx.moveTo(star.x + star.radius, star.y);
+                    ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha})`;
+                    ctx.fill();
+                });
+                
+                animationFrameId = requestAnimationFrame(animate);
+            }
+            
+            // Create planets with efficient DOM manipulation
+            function createPlanets(width, height) {
+                // Remove existing planets
+                planets.forEach(planet => planet.remove && planet.remove());
+                planets.length = 0;
+                
+                // Create planet elements with document fragment for better performance
+                const fragment = document.createDocumentFragment();
+                const planetCount = width < 600 ? 2 : 3;
+                const colors = [
+                    'radial-gradient(circle at 30% 30%, #4a00e0, #000)',
+                    'radial-gradient(circle at 30% 30%, #ff5e62, #2a0845)',
+                    'radial-gradient(circle at 30% 20%, #36d1dc, #5b86e5)'
+                ];
+                
+                for (let i = 0; i < planetCount; i++) {
+                    const size = Math.random() * (width < 600 ? 40 : 70) + 30;
+                    const planet = document.createElement('div');
+                    planet.className = 'planet';
+                    
+                    // Set styles directly instead of individual properties
+                    Object.assign(planet.style, {
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        background: colors[i % colors.length]
+                    });
+                    
+                    // Position planets with better distribution
+                    const angle = (i * (360 / planetCount) + Math.random() * 30) % 360;
+                    const distance = Math.max(width, height) * 0.4;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    
+                    const x = centerX + Math.cos(angle * Math.PI / 180) * distance - size / 2;
+                    const y = centerY + Math.sin(angle * Math.PI / 180) * distance - size / 2;
+                    
+                    planet.style.left = `${x}px`;
+                    planet.style.top = `${y}px`;
+                    planet.style.animation = `float ${15 + i * 5 + Math.random() * 10}s infinite ease-in-out ${i * 2}s`;
+                    
+                    fragment.appendChild(planet);
+                    planets.push(planet);
+                }
+                
+                document.body.appendChild(fragment);
+            }
+            
+            // Event handlers
+            document.getElementById('homeBtn').addEventListener('click', () => {
+                window.location.href = "/";
+            });
+            
+            // Handle resize with efficient debounce
+            const handleResize = throttle(() => {
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                setupCanvas();
+                animate();
+            }, 250);
+            
+            window.addEventListener('resize', handleResize);
+            
+            // Initialize the page
+            setupCanvas();
+            animate();
+        })();
+    </script>
+</body>
+</html>
