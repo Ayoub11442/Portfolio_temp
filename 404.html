@@ -3,35 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>404 Not Found</title>
-  <style>
-    body {
-      background-color: #f8f8f8;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      padding: 100px;
-    }
-    h1 {
-      font-size: 80px;
-      margin: 0;
-    }
-    p {
-      font-size: 20px;
-      margin: 20px 0;
-    }
-    a {
-      text-decoration: none;
-      color: #007bff;
-      font-weight: bold;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <title>404 - Lost in Space</title>
+  <link rel="stylesheet" href="404style.css">
+  
 </head>
 <body>
-  <h1>404</h1>
-  <p>Oops! The page you're looking for doesn't exist.</p>
-  <a href="/">Go back home</a>
+  <div id="error-counter">404 Error Counter: <span id="count">1</span></div>
+  <button class="toggle-btn" onclick="toggleDarkMode()">
+    <span id="mode-text">Dark Mode</span>
+  </button>
+  
+  <div class="stars" id="stars"></div>
+  <div id="meteors"></div>
+  
+  <div class="content">
+    <h1>404</h1>
+    <div class="planet"></div>
+    <p>Houston, we have a problem! The page you're looking for has drifted into deep space.</p>
+    
+    <div id="search-container">
+      <input type="text" id="search-input" placeholder="Try searching for something else...">
+      <button id="search-button">Search</button>
+    </div>
+    
+    <div class="button-container">
+      <a href="/" class="cosmic-button">⬅️ Return to Earth</a>
+      <button class="cosmic-button" onclick="reportIssue()">🚀 Report Issue</button>
+    </div>
+    
+    <div id="sitemap-link" onclick="showSitemap()">Looking for something specific? Check our sitemap</div>
+  </div>
+  
+  <div class="hidden-message" onclick="showEasterEgg()">Tap for a cosmic surprise</div>
+  
+  <svg class="astronaut" xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300">
+    <ellipse cx="150" cy="150" rx="90" ry="120" fill="#f5f5f5" />
+    <circle cx="150" cy="100" r="60" fill="#e0e0e0" />
+    <circle cx="150" cy="100" r="50" fill="#9b59b6" opacity="0.5" />
+    <circle cx="120" cy="90" r="10" fill="white" />
+    <circle cx="180" cy="90" r="10" fill="white" />
+    <rect x="140" y="180" width="20" height="40" fill="#e0e0e0" />
+    <rect x="120" y="220" width="20" height="30" rx="5" fill="#f5f5f5" />
+    <rect x="160" y="220" width="20" height="30" rx="5" fill="#f5f5f5" />
+    <line x1="110" y1="130" x2="190" y2="130" stroke="#ccc" stroke-width="5" />
+    <circle cx="150" cy="240" r="30" fill="#3498db" opacity="0.3" />
+  </svg>
+  
+  
+  <script src="404script"></script>
 </body>
 </html>
