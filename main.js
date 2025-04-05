@@ -698,4 +698,76 @@ document.addEventListener("DOMContentLoaded", () => {
   };
   // Initialize loader
   loader.init();
+  function initCustomCursor() {
+    const cursor = document.querySelector(".cursor");
+    const cursorShadow = document.querySelector(".cursor-shadow");
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    if (
+      !cursor ||
+      !cursorShadow ||
+      window.matchMedia("(hover: none)").matches
+    ) {
+      return;
+    }
+
+    // Smooth cursor movement
+    const moveCursor = () => {
+      const speed = 0.2;
+
+      cursorX += (mouseX - cursorX) * speed;
+      cursorY += (mouseY - cursorY) * speed;
+
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+      cursorShadow.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0)`;
+
+      requestAnimationFrame(moveCursor);
+    };
+
+    window.addEventListener("mousemove", (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    // Initialize smooth cursor movement
+    moveCursor();
+
+    // Add hover effects for interactive elements
+    const interactiveElements = document.querySelectorAll(
+      "a, button, .btn, .project-card, .nav-link, h1, h2, h3, p"
+    );
+
+    interactiveElements.forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1.5)`;
+        cursorShadow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1.5)`;
+        cursor.style.backgroundColor = "var(--primary-color)";
+        cursor.style.opacity = "1";
+      });
+
+      el.addEventListener("mouseleave", () => {
+        cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+        cursorShadow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+        cursor.style.backgroundColor = "var(--primary-color)";
+        cursor.style.opacity = "0.7";
+      });
+    });
+
+    // Add cursor effects for mouse down/up
+    document.addEventListener("mousedown", () => {
+      cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(0.8)`;
+      cursorShadow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(0.8)`;
+    });
+
+    document.addEventListener("mouseup", () => {
+      cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+      cursorShadow.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) scale(1)`;
+    });
+  }
+
+  // Initialize cursor when DOM is loaded
+  document.addEventListener("DOMContentLoaded", initCustomCursor);
 });

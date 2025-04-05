@@ -279,7 +279,53 @@ ul {
     66% { content: "..."; }
     100% { content: "."; }
 }
+/* Hover states for interactive elements */
+a:hover ~ .cursor,
+button:hover ~ .cursor,
+.btn:hover ~ .cursor,
+.project-card:hover ~ .cursor,
+.nav-link:hover ~ .cursor {
+    width: 16px;
+    height: 16px;
+    background: var(--primary-color);
+    mix-blend-mode: difference;
+    opacity: 1;
+}
 
+a:hover ~ .cursor-shadow,
+button:hover ~ .cursor-shadow,
+.btn:hover ~ .cursor-shadow,
+.project-card:hover ~ .cursor-shadow,
+.nav-link:hover ~ .cursor-shadow {
+    width: 60px;
+    height: 60px;
+    opacity: 0.8;
+    border-width: 2px;
+}
+
+/* Hide default cursor when custom cursor is active */
+body:has(.cursor) {
+    cursor: none;
+}
+
+body:has(.cursor) a,
+body:has(.cursor) button,
+body:has(.cursor) .btn,
+body:has(.cursor) .project-card,
+body:has(.cursor) .nav-link {
+    cursor: none;
+}
+
+/* Ensure cursor is only shown on devices with hover capability */
+@media (hover: none) {
+    .cursor, .cursor-shadow {
+        display: none;
+    }
+    
+    body, a, button, .btn, .project-card, .nav-link {
+        cursor: auto;
+    }
+}
 /* Dark mode support */
 .dark-mode .loader-wrapper {
     background: var(--bg-color);
