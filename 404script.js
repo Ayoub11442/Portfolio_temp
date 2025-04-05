@@ -1,11 +1,44 @@
+// Wait for DOM to be fully loaded
+document.addEventListener("DOMContentLoaded", () => {
+  // Initialize all features
+  initializeSpace();
+  setupEventListeners();
+  incrementCounter();
+});
+
+// Initialize space elements
+function initializeSpace() {
+  // Ensure the stars container exists
+  if (!document.querySelector(".stars")) {
+    const starsContainer = document.createElement("div");
+    starsContainer.classList.add("stars");
+    document.body.appendChild(starsContainer);
+  }
+
+  createStars();
+  createMeteors();
+
+  // Set initial mode based on user preference
+  if (
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+  ) {
+    document.body.classList.add("dark-mode");
+    updateModeText();
+  }
+}
+
 // Create stars
 function createStars() {
-  const stars = document.getElementById("stars");
+  const stars =
+    document.querySelector(".stars") || document.getElementById("stars");
+  if (!stars) return;
+
   const starCount = 200;
 
   for (let i = 0; i < starCount; i++) {
     const star = document.createElement("div");
-    star.className = "star";
+    star.classList.add("star");
 
     // Random size between 1-3px
     const size = Math.random() * 2 + 1;
@@ -16,8 +49,9 @@ function createStars() {
     star.style.left = `${Math.random() * 100}%`;
     star.style.top = `${Math.random() * 100}%`;
 
-    // Random delay for twinkling
-    star.style.animationDelay = `${Math.random() * 2}s`;
+    // Different twinkle speeds
+    star.style.animationDuration = `${Math.random() * 3 + 1}s`;
+    star.style.animationDelay = `${Math.random() * 3}s`;
 
     stars.appendChild(star);
   }
@@ -26,30 +60,120 @@ function createStars() {
 // Create meteors
 function createMeteors() {
   const meteorsDiv = document.getElementById("meteors");
+  const container = meteorsDiv || document.body;
 
-  setInterval(() => {
-    const meteor = document.createElement("div");
-    meteor.className = "meteor";
+  // Create a meteor every few seconds
+  setInterval(
+    () => {
+      const meteor = document.createElement("div");
+      meteor.classList.add("meteor");
 
-    meteor.style.top = `${Math.random() * 50}%`;
-    meteor.style.left = `${Math.random() * 50 + 50}%`;
+      if (meteorsDiv) {
+        // First implementation style
+        meteor.style.top = `${Math.random() * 50}%`;
+        meteor.style.left = `${Math.random() * 50 + 50}%`;
+      } else {
+        // Second implementation style
+        const startPosition = Math.random() * window.innerWidth;
+        meteor.style.left = `${startPosition}px`;
+        meteor.style.top = "0px";
 
-    meteorsDiv.appendChild(meteor);
+        // Random size and speed
+        const size = Math.random() * 2 + 1;
+        const duration = Math.random() * 3 + 1;
+        meteor.style.width = `${size}px`;
+        meteor.style.height = `${size * 30}px`;
+        meteor.style.animationDuration = `${duration}s`;
 
-    // Remove meteor after animation
-    setTimeout(() => {
-      meteor.remove();
-    }, 2000);
-  }, 4000);
+        // Random angle variation
+        const angle = 45 + (Math.random() * 10 - 5);
+        meteor.style.transform = `rotate(${angle}deg)`;
+
+        // Set timeout for removal based on animation duration
+        setTimeout(() => {
+          meteor.remove();
+        }, duration * 1000);
+      }
+
+      container.appendChild(meteor);
+
+      // Remove meteor after animation (for first implementation)
+      if (meteorsDiv) {
+        setTimeout(() => {
+          meteor.remove();
+        }, 2000);
+      }
+    },
+    meteorsDiv ? 4000 : 800
+  ); // Different intervals for different implementations
+}
+
+// Set up event listeners
+function setupEventListeners() {
+  // Set up dark mode toggle if it exists
+  const toggleButton =
+    document.querySelector(".toggle-btn") ||
+    document.getElementById("mode-toggle");
+  if (toggleButton) {
+    toggleButton.addEventListener("click", toggleDarkMode);
+  }
+
+  // Set up search functionality
+  const searchButton = document.getElementById("search-button");
+  if (searchButton) {
+    searchButton.addEventListener("click", handleSearch);
+
+    const searchInput = document.getElementById("search-input");
+    if (searchInput) {
+      searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
+          handleSearch();
+        }
+      });
+    }
+  }
+
+  // Set up other buttons if they exist
+  const reportButton = document.getElementById("report-button");
+  if (reportButton) {
+    reportButton.addEventListener("click", reportIssue);
+  }
+
+  const sitemapButton = document.getElementById("sitemap-button");
+  if (sitemapButton) {
+    sitemapButton.addEventListener("click", showSitemap);
+  }
+
+  const easterEggButton = document.getElementById("easter-egg");
+  if (easterEggButton) {
+    easterEggButton.addEventListener("click", showEasterEgg);
+  }
 }
 
 // Toggle dark mode
 function toggleDarkMode() {
   document.body.classList.toggle("dark-mode");
+  updateModeText();
+}
+
+// Update mode text
+function updateModeText() {
   const modeText = document.getElementById("mode-text");
-  modeText.textContent = document.body.classList.contains("dark-mode")
-    ? "Light Mode"
-    : "Dark Mode";
+  if (modeText) {
+    modeText.textContent = document.body.classList.contains("dark-mode")
+      ? "Light Mode"
+      : "Dark Mode";
+  }
+}
+
+// Handle search
+function handleSearch() {
+  const searchInput = document.getElementById("search-input");
+  if (searchInput && searchInput.value.trim() !== "") {
+    alert(
+      `Searching for "${searchInput.value}" in our galaxy... No results found in this universe.`
+    );
+  }
 }
 
 // Mock reporting issue
@@ -81,7 +205,9 @@ function showEasterEgg() {
 // Increment error counter
 function incrementCounter() {
   const counter = document.getElementById("count");
-  let count = parseInt(counter.textContent);
+  if (!counter) return;
+
+  let count = parseInt(counter.textContent || "0");
 
   // Get from localStorage if available
   const savedCount = localStorage.getItem("404count");
@@ -93,125 +219,3 @@ function incrementCounter() {
   counter.textContent = count;
   localStorage.setItem("404count", count);
 }
-
-// Initialize
-document.addEventListener("DOMContentLoaded", function () {
-  createStars();
-  createMeteors();
-  incrementCounter();
-
-  // Set initial mode based on user preference
-  if (
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches
-  ) {
-    document.body.classList.add("dark-mode");
-    document.getElementById("mode-text").textContent = "Light Mode";
-  }
-
-  // Mock search functionality
-  document
-    .getElementById("search-button")
-    .addEventListener("click", function () {
-      const query = document.getElementById("search-input").value;
-      if (query.trim() !== "") {
-        alert(
-          `Searching for "${query}" in our galaxy... No results found in this universe.`
-        );
-      }
-    });
-
-  document
-    .getElementById("search-input")
-    .addEventListener("keypress", function (e) {
-      if (e.key === "Enter") {
-        document.getElementById("search-button").click();
-      }
-    });
-});
-// Function to create stars in the background
-function createStars() {
-  const stars = document.querySelector(".stars");
-  const starCount = 200;
-
-  for (let i = 0; i < starCount; i++) {
-    const star = document.createElement("div");
-    star.classList.add("star");
-
-    // Random size between 1-3px
-    const size = Math.random() * 2 + 1;
-    star.style.width = `${size}px`;
-    star.style.height = `${size}px`;
-
-    // Random position
-    star.style.left = `${Math.random() * 100}%`;
-    star.style.top = `${Math.random() * 100}%`;
-
-    // Different twinkle speeds
-    star.style.animationDuration = `${Math.random() * 3 + 1}s`;
-    star.style.animationDelay = `${Math.random() * 3}s`;
-
-    stars.appendChild(star);
-  }
-}
-
-// Function to create meteors in the background
-function createMeteors() {
-  const container = document.querySelector("body");
-  const meteorCount = 10;
-
-  // Create a meteor every few seconds
-  setInterval(() => {
-    // Create meteor element
-    const meteor = document.createElement("div");
-    meteor.classList.add("meteor");
-
-    // Set random starting position at the top of the screen
-    const startPosition = Math.random() * window.innerWidth;
-    meteor.style.left = `${startPosition}px`;
-    meteor.style.top = "0px";
-
-    // Random size and speed
-    const size = Math.random() * 2 + 1;
-    const duration = Math.random() * 3 + 1;
-    meteor.style.width = `${size}px`;
-    meteor.style.height = `${size * 30}px`;
-    meteor.style.animationDuration = `${duration}s`;
-
-    // Random angle variation
-    const angle = 45 + (Math.random() * 10 - 5);
-    meteor.style.transform = `rotate(${angle}deg)`;
-
-    // Append meteor to body
-    container.appendChild(meteor);
-
-    // Remove meteor after animation completes
-    setTimeout(() => {
-      meteor.remove();
-    }, duration * 1000);
-  }, 800); // Create a new meteor approximately every 800ms
-}
-
-// Initialize stars and meteors when the DOM is loaded
-document.addEventListener("DOMContentLoaded", () => {
-  // Ensure the stars container exists
-  if (!document.querySelector(".stars")) {
-    const starsContainer = document.createElement("div");
-    starsContainer.classList.add("stars");
-    document.body.appendChild(starsContainer);
-  }
-
-  // Create the stars
-  createStars();
-
-  // Create the meteors
-  createMeteors();
-
-  // Set up dark mode toggle if it exists
-  const toggleButton = document.querySelector(".toggle-btn");
-  if (toggleButton) {
-    toggleButton.addEventListener("click", () => {
-      document.body.classList.toggle("dark-mode");
-    });
-  }
-});
